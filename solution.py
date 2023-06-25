@@ -31,11 +31,13 @@ class Crucible:
     @property  # needed?
     def avg_Al(self):
         al_avg = np.mean([pot.Al for pot in self.pots])
+        return al_avg
         # (pots[0].Al + pots[1].Al + pots[2].Al)/3
 
     @property
     def avg_Fe(self):
         fe_avg = np.mean([pot.Fe for pot in self.pots])
+        return fe_avg
         # (pots[0].Fe + pots[1].Fe + pots[2].Fe)/3
 
     # # TODO quality func instead of avg al and FE
@@ -252,18 +254,20 @@ PotFe = [
 # TODO add fx as an output
 def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
     sol = []
+    fx = 0
     proportions = list(zip(pot_al, pot_fe))
     for i in range(0, 51, 3):
-        sol.append(
-            Crucible(
-                [
-                    Pot(i, proportions[i][0], proportions[i][1]),
-                    Pot(i + 1, proportions[i + 1][0], proportions[i + 1][1]),
-                    Pot(i + 2, proportions[i + 2][0], proportions[i + 2][1]),
-                ]
-            )
-        )  # FIXM
-    return sol
+        cruc = Crucible(
+            [
+                Pot(i, proportions[i][0], proportions[i][1]),
+                Pot(i + 1, proportions[i + 1][0], proportions[i + 1][1]),
+                Pot(i + 2, proportions[i + 2][0], proportions[i + 2][1]),
+            ]
+        )
+        sol.append(cruc)
+        fx += calc_crucible_value(cruc)
+
+    return sol, fx
 
 
 # TODO move these into a df
@@ -311,36 +315,9 @@ quality_df = pd.DataFrame(
         ],
     }
 )
-# QualityMinAl = [
-#     95.00,
-#     99.10,
-#     99.10,
-#     99.20,
-#     99.25,
-#     99.35,
-#     99.50,
-#     99.65,
-#     99.75,
-#     99.85,
-#     99.90,
-# ]
-# QualityMaxFe = [5.00, 0.81, 0.79, 0.79, 0.76, 0.72, 0.53, 0.50, 0.46, 0.33, 0.30]
-# QualityValue = [
-#     10,
-#     21.25,
-#     26.95,
-#     36.25,
-#     41.53,
-#     44.53,
-#     48.71,
-#     52.44,
-#     57.35,
-#     68.21,
-#     72.56,
-# ]
 
 
-def calc_crucible_value(crucible: Crucible, quality_df, tol=1e5):
+def calc_crucible_value(crucible: Crucible, quality_df=quality_df, tol=1e5):
     value = 0
     # TODO vectorise this
     for i in range(len(quality_df)):
