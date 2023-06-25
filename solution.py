@@ -27,7 +27,7 @@ class Crucible:
     def __setitem__(self, i, pot: Pot):
         self.pots[i] = pot
 
-    @property
+    @property  # needed?
     def avg_Al(self):
         al_avg = np.mean([pot.Al for pot in self.pots])
         # (pots[0].Al + pots[1].Al + pots[2].Al)/3
@@ -37,26 +37,21 @@ class Crucible:
         fe_avg = np.mean([pot.Fe for pot in self.pots])
         # (pots[0].Fe + pots[1].Fe + pots[2].Fe)/3
 
+    # TODO quality func instead of avg al and FE
+    def get_value(self):
+        return calc_quality(self.avg_Al, self.avg_Fe)
+
 
 # TODO is this class necessary - could move the values into the solution value class?
-@dataclass
-class Solution:
-    _sol: List[Crucible]
-    fx: None
 
-    @property
-    def solution(self) -> List[Crucible]:
-        return self._sol
 
-    @solution.setter
-    def solution(self, new_sol):
-        pass
+# FIXME
+def calc_objective(solution: List[Crucible]):
+    return np.sum([calc_quality(crucible) for crucible in solution])
 
-    def calc_objective(self):
-        self.fx = np.sum([self._g(x.avg_Al, x.avg_Fe) for x in self.sol])
 
-    def _g(self, avg_Al, avg_Fe):
-        pass  # quality calculation for each crucible
+def calc_quality(crucible: Crucible):
+    pass  # quality calculation for each crucible
 
 
 # TODO as function
@@ -86,8 +81,7 @@ def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]
     pot_indices = set(itertools.combinations(range(3), 2))
     for c1, c2 in crucible_indices:
         if c1 != c2:
-            # crucible_1 = x[c1]
-            # crucible_2 = x[c2]
+            # TODO verbose option
             for p1, p2 in pot_indices:
                 if p1 != p2:
                     temp = x[c1][p1]
@@ -98,14 +92,52 @@ def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]
                     yield x, (c1, c2, p1, p2)
 
 
-class LocalSearch:
-    pass
+# neighbourhood as a class that is passed to steepest ascent?
+
+
+# TODO create an abstract base class for this
+class NextAscent:
+    max_iter = 15
+
+    def __init__(self, neighbourhood_func) -> None:
+        self.neighbours = neighbourhood_func
+        self.converged = False
+        self.x_hist = []
+        self.fx_hist = []
 
     # TODO progress bar
-    def solve():
-        pass
+    def solve(self, x0, f0):
+        current_max = f0
+        current_sol = x0
+        self.x_hist.append(x0)
+        self.fx_hist.append(f0)
+
+        for i in self.max_iter:
+            Nx = self.neighbours(current_sol)
+
+            for x_new, (c1, c2, p1, p1) in Nx:
+                dfx = self.calc_delta_fx(x0, x_new, c1, c2)
+
+                if dfx > 0:
+                    current_sol = x_new
+                    self.x_hist.append(x_new)
+                    self.fx_hist.append(current_max + dfx)
+                else:
+                    continue
+
+            # TODO break when converged
+
+        return
+
+    @staticmethod  # calculate the effect of the swap on objective func
+    def calc_delta_fx(x0, x_new, c1, c2):
+        # since the solution is additive we can calculate the change in
+        delta_1 = x0[c1].get_value() - x_new[c1].get_value()
+        delta_2 = x0[c2].get_value() - x_new[c2].get_value()
+        return delta_1 + delta_2
 
 
+# TODO store this in a csv, read in...
 # Intitial Solution
 PotAl = [
     99.79,
@@ -216,10 +248,9 @@ PotFe = [
 ]
 
 
+# TODO add fx as an output
 def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
     sol = []
-
-    # TODO instead get 3 at a time and make a crucible, then append to the list
     proportions = list(zip(pot_al, pot_fe))
     for i in range(0, 51, 3):
         sol.append(
