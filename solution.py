@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Generator, Any
 import numpy as np
 import itertools
 
@@ -10,7 +10,6 @@ class Pot:
     index: int
     Al: float
     Fe: float
-    pass
 
 
 # there are 17 crucibles
@@ -18,8 +17,15 @@ class Pot:
 class Crucible:
     pots: List[Pot]
 
+    def __repr__(self) -> str:
+        pot_num = [pot.index for pot in self.pots]
+        return f"Crucible: p={pot_num}"
+
     def __getitem__(self, i):
         return self.pots[i]
+
+    def __setitem__(self, i, pot: Pot):
+        self.pots[i] = pot
 
     @property
     def avg_Al(self):
@@ -54,7 +60,8 @@ class Solution:
 
 
 # TODO as function
-class Neighbourhood:
+# class Neighbourhood:
+def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]:
     """Generate neighbouring solutions by swapping two pots from different crucibles.
 
     N(x) = {y(x, p1, p2, c1, c2) :  p1=0,...,50 & p2=0,...,50 & (a != b) & (c1 != c2) }
@@ -75,24 +82,20 @@ class Neighbourhood:
         x_{i} otherwise
         }
     """
+    crucible_indices = set(itertools.combinations(range(17), 2))
+    pot_indices = set(itertools.combinations(range(3), 2))
+    for c1, c2 in crucible_indices:
+        if c1 != c2:
+            # crucible_1 = x[c1]
+            # crucible_2 = x[c2]
+            for p1, p2 in pot_indices:
+                if p1 != p2:
+                    temp = x[c1][p1]
 
-    # def __init__(self, x: Solution) -> None:
-    #     self.solution = x
+                    x[c1][p1] = x[c2][p2]
+                    x[c2][p2] = temp
 
-    def get_neighbours(x: Solution):
-        crucible_indices = set(itertools.combinations(range(17, 2)))
-        pot_indices = set(itertools.combinations(range(51)))
-        for c1, c2 in crucible_indices:
-            if c1 != c2:
-                crucible_1 = x[c1]
-                crucible_2 = x[c2]
-                for p1, p2 in pot_indices:
-                    temp = crucible_1[p1]
-
-                    crucible_1[p1] = crucible_2[p2]
-                    crucible_2[p2] = temp
-
-                    return x
+                    yield x, (c1, c2, p1, p2)
 
 
 class LocalSearch:
@@ -213,14 +216,21 @@ PotFe = [
 ]
 
 
-def create_init_sol(pot_al, pot_fe):
-    crucibles = []
+def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
+    sol = []
 
     # TODO instead get 3 at a time and make a crucible, then append to the list
-    for i, (al, fe) in enumerate(zip(pot_al, pot_fe)):
-        crucibles.append  # (Pot(i, al, fe)) FIXME
-
-    sol = Crucible(crucibles)
+    proportions = list(zip(pot_al, pot_fe))
+    for i in range(0, 51, 3):
+        sol.append(
+            Crucible(
+                [
+                    Pot(i, proportions[i][0], proportions[i][1]),
+                    Pot(i + 1, proportions[i + 1][0], proportions[i + 1][1]),
+                    Pot(i + 2, proportions[i + 2][0], proportions[i + 2][1]),
+                ]
+            )
+        )  # FIXM
     return sol
 
 
