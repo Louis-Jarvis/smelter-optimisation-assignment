@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Generator, Any
 import numpy as np
+import pandas as pd
 import itertools
 
 
@@ -37,9 +38,9 @@ class Crucible:
         fe_avg = np.mean([pot.Fe for pot in self.pots])
         # (pots[0].Fe + pots[1].Fe + pots[2].Fe)/3
 
-    # TODO quality func instead of avg al and FE
-    def get_value(self):
-        return calc_quality(self.avg_Al, self.avg_Fe)
+    # # TODO quality func instead of avg al and FE
+    # def get_value(self):
+    #     return calc_quality(self.avg_Al, self.avg_Fe)
 
 
 # TODO is this class necessary - could move the values into the solution value class?
@@ -47,7 +48,7 @@ class Crucible:
 
 # FIXME
 def calc_objective(solution: List[Crucible]):
-    return np.sum([calc_quality(crucible) for crucible in solution])
+    return np.sum([calc_crucible_value(crucible) for crucible in solution])
 
 
 def calc_quality(crucible: Crucible):
@@ -265,30 +266,86 @@ def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
     return sol
 
 
-QualityMinAl = [
-    95.00,
-    99.10,
-    99.10,
-    99.20,
-    99.25,
-    99.35,
-    99.50,
-    99.65,
-    99.75,
-    99.85,
-    99.90,
-]
-QualityMaxFe = [5.00, 0.81, 0.79, 0.79, 0.76, 0.72, 0.53, 0.50, 0.46, 0.33, 0.30]
-QualityValue = [
-    10,
-    21.25,
-    26.95,
-    36.25,
-    41.53,
-    44.53,
-    48.71,
-    52.44,
-    57.35,
-    68.21,
-    72.56,
-]
+# TODO move these into a df
+
+quality_df = pd.DataFrame(
+    data={
+        "QualityMinAl": [
+            95.00,
+            99.10,
+            99.10,
+            99.20,
+            99.25,
+            99.35,
+            99.50,
+            99.65,
+            99.75,
+            99.85,
+            99.90,
+        ],
+        "QualityMaxFe": [
+            5.00,
+            0.81,
+            0.79,
+            0.79,
+            0.76,
+            0.72,
+            0.53,
+            0.50,
+            0.46,
+            0.33,
+            0.30,
+        ],
+        "QualityValue": [
+            10,
+            21.25,
+            26.95,
+            36.25,
+            41.53,
+            44.53,
+            48.71,
+            52.44,
+            57.35,
+            68.21,
+            72.56,
+        ],
+    }
+)
+# QualityMinAl = [
+#     95.00,
+#     99.10,
+#     99.10,
+#     99.20,
+#     99.25,
+#     99.35,
+#     99.50,
+#     99.65,
+#     99.75,
+#     99.85,
+#     99.90,
+# ]
+# QualityMaxFe = [5.00, 0.81, 0.79, 0.79, 0.76, 0.72, 0.53, 0.50, 0.46, 0.33, 0.30]
+# QualityValue = [
+#     10,
+#     21.25,
+#     26.95,
+#     36.25,
+#     41.53,
+#     44.53,
+#     48.71,
+#     52.44,
+#     57.35,
+#     68.21,
+#     72.56,
+# ]
+
+
+def calc_crucible_value(crucible: Crucible, quality_df, tol=1e5):
+    value = 0
+    # TODO vectorise this
+    for i in range(len(quality_df)):
+        if crucible.avg_Al >= quality_df.loc[i, "QualityMinAl"] - tol:
+            if crucible.avg_Fe <= quality_df.loc[i, "QualityMaxFe"] + tol:
+                value = quality_df.loc[i, "QualityValue"]
+
+    return value
