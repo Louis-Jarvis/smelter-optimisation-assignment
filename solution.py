@@ -1,8 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Generator, Any
 import numpy as np
 import pandas as pd
 import itertools
+import warnings
+from copy import deepcopy
 
 
 # there are 51 pots
@@ -17,6 +19,20 @@ class Pot:
 @dataclass
 class Crucible:
     pots: List[Pot]
+    # avg_al: float = field(init=False)
+    # avg_fe: float = field(init=False)
+
+    @property
+    def avg_al(self):
+        return np.mean([pot.Al for pot in self.pots])
+
+    @property
+    def avg_fe(self):
+        return np.mean([pot.Fe for pot in self.pots])
+
+    # def __post_init__(self):
+    #     self.avg_al = np.mean([pot.Al for pot in self.pots])
+    #     self.avg_fe = np.mean([pot.Fe for pot in self.pots])
 
     def __repr__(self) -> str:
         pot_num = [pot.index for pot in self.pots]
@@ -27,22 +43,6 @@ class Crucible:
 
     def __setitem__(self, i, pot: Pot):
         self.pots[i] = pot
-
-    @property  # needed?
-    def avg_Al(self):
-        al_avg = np.mean([pot.Al for pot in self.pots])
-        return al_avg
-        # (pots[0].Al + pots[1].Al + pots[2].Al)/3
-
-    @property
-    def avg_Fe(self):
-        fe_avg = np.mean([pot.Fe for pot in self.pots])
-        return fe_avg
-        # (pots[0].Fe + pots[1].Fe + pots[2].Fe)/3
-
-    # # TODO quality func instead of avg al and FE
-    # def get_value(self):
-    #     return calc_quality(self.avg_Al, self.avg_Fe)
 
 
 # TODO is this class necessary - could move the values into the solution value class?
@@ -82,17 +82,20 @@ def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]
     """
     crucible_indices = set(itertools.combinations(range(17), 2))
     pot_indices = set(itertools.combinations(range(3), 2))
+
+    x_i = deepcopy(x)
+
     for c1, c2 in crucible_indices:
         if c1 != c2:
             # TODO verbose option
             for p1, p2 in pot_indices:
                 if p1 != p2:
-                    temp = x[c1][p1]
+                    temp = x_i[c1][p1]
 
-                    x[c1][p1] = x[c2][p2]
-                    x[c2][p2] = temp
+                    x_i[c1][p1] = x_i[c2][p2]
+                    x_i[c2][p2] = temp
 
-                    yield x, (c1, c2, p1, p2)
+                    yield x_i, (c1, c2, p1, p2)
 
 
 # neighbourhood as a class that is passed to steepest ascent?
@@ -100,10 +103,12 @@ def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]
 
 # TODO create an abstract base class for this
 class NextAscent:
-    max_iter = 15
+    max_iter = 500
+    tol = 1e-6
 
-    def __init__(self, neighbourhood_func) -> None:
+    def __init__(self, neighbourhood_func, verbose=False) -> None:
         self.neighbours = neighbourhood_func
+        self.verbose = verbose
         self.converged = False
         self.x_hist = []
         self.fx_hist = []
@@ -115,19 +120,30 @@ class NextAscent:
         self.x_hist.append(x0)
         self.fx_hist.append(f0)
 
-        for i in self.max_iter:
+        for i in range(self.max_iter + 1):
+            if i == self.max_iter:
+                warnings.warn("Maximum number of iterations reached.")
+                return
+
             Nx = self.neighbours(current_sol)
 
+            # verbose option
+
             for x_new, (c1, c2, p1, p1) in Nx:
-                dfx = self.calc_delta_fx(x0, x_new, c1, c2)
+                dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
 
                 if dfx > 0:
                     current_sol = x_new
+                    current_max += dfx
                     self.x_hist.append(x_new)
-                    self.fx_hist.append(current_max + dfx)
-                else:
-                    continue
+                    self.fx_hist.append(current_max)
+                    break
 
+            if np.abs(dfx) < self.tol:
+                self.converged = True
+                self.x_hist.append(x_new)
+                self.fx_hist.append(current_max)
+                return
             # TODO break when converged
 
         return
@@ -135,8 +151,8 @@ class NextAscent:
     @staticmethod  # calculate the effect of the swap on objective func
     def calc_delta_fx(x0, x_new, c1, c2):
         # since the solution is additive we can calculate the change in
-        delta_1 = x0[c1].get_value() - x_new[c1].get_value()
-        delta_2 = x0[c2].get_value() - x_new[c2].get_value()
+        delta_1 = calc_crucible_value(x_new[c1]) - calc_crucible_value(x0[c1])
+        delta_2 = calc_crucible_value(x_new[c2]) - calc_crucible_value(x0[c2])
         return delta_1 + delta_2
 
 
@@ -255,17 +271,18 @@ PotFe = [
 def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
     sol = []
     fx = 0
-    proportions = list(zip(pot_al, pot_fe))
+
     for i in range(0, 51, 3):
-        cruc = Crucible(
+        crucible_i = Crucible(
             [
-                Pot(i, proportions[i][0], proportions[i][1]),
-                Pot(i + 1, proportions[i + 1][0], proportions[i + 1][1]),
-                Pot(i + 2, proportions[i + 2][0], proportions[i + 2][1]),
+                Pot(i, pot_al[i], pot_fe[i]),
+                Pot(i + 1, pot_al[i + 1], pot_fe[i + 1]),
+                Pot(i + 2, pot_al[i + 2], pot_fe[i + 2]),
             ]
         )
-        sol.append(cruc)
-        fx += calc_crucible_value(cruc)
+
+        sol.append(crucible_i)
+        fx += calc_crucible_value(crucible_i)
 
     return sol, fx
 
@@ -317,12 +334,13 @@ quality_df = pd.DataFrame(
 )
 
 
-def calc_crucible_value(crucible: Crucible, quality_df=quality_df, tol=1e5):
+def calc_crucible_value(crucible: Crucible, quality_df=quality_df, tol=1e-5):
     value = 0
     # TODO vectorise this
-    for i in range(len(quality_df)):
-        if crucible.avg_Al >= quality_df.loc[i, "QualityMinAl"] - tol:
-            if crucible.avg_Fe <= quality_df.loc[i, "QualityMaxFe"] + tol:
+    for i in range(len(quality_df) - 1, 0, -1):
+        if crucible.avg_al >= quality_df.loc[i, "QualityMinAl"] - tol:
+            if crucible.avg_fe <= quality_df.loc[i, "QualityMaxFe"] + tol:
                 value = quality_df.loc[i, "QualityValue"]
+                return value
 
     return value
