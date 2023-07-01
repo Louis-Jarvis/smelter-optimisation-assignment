@@ -59,7 +59,7 @@ def calc_quality(crucible: Crucible):
 
 # TODO as function
 # class Neighbourhood:
-def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]:
+class Neighbourhood:
     """Generate neighbouring solutions by swapping two pots from different crucibles.
 
     N(x) = {y(x, p1, p2, c1, c2) :  p1=0,...,50 & p2=0,...,50 & (a != b) & (c1 != c2) }
@@ -80,22 +80,27 @@ def gen_neighbourhood(x: List[Crucible]) -> Generator[List[Crucible], Any, None]
         x_{i} otherwise
         }
     """
-    crucible_indices = set(itertools.combinations(range(17), 2))
-    pot_indices = set(itertools.combinations(range(3), 2))
 
-    x_i = deepcopy(x)
+    def __init__(self, x: List[Crucible]):
+        self.x = x
 
-    for c1, c2 in crucible_indices:
-        if c1 != c2:
-            # TODO verbose option
-            for p1, p2 in pot_indices:
-                if p1 != p2:
-                    temp = x_i[c1][p1]
+    def __iter__(self):
+        crucible_indices = set(itertools.combinations(range(17), 2))
+        pot_indices = set(itertools.combinations(range(3), 2))
 
-                    x_i[c1][p1] = x_i[c2][p2]
-                    x_i[c2][p2] = temp
+        x_i = deepcopy(self.x)
 
-                    yield x_i, (c1, c2, p1, p2)
+        for c1, c2 in crucible_indices:
+            if c1 != c2:
+                # TODO verbose option
+                for p1, p2 in pot_indices:
+                    if p1 != p2:
+                        temp = x_i[c1][p1]
+
+                        x_i[c1][p1] = x_i[c2][p2]
+                        x_i[c2][p2] = temp
+
+                        yield x_i, (c1, c2, p1, p2)
 
 
 # neighbourhood as a class that is passed to steepest ascent?
@@ -106,8 +111,8 @@ class NextAscent:
     max_iter = 500
     tol = 1e-6
 
-    def __init__(self, neighbourhood_func, verbose=False) -> None:
-        self.neighbours = neighbourhood_func
+    def __init__(self, verbose=False) -> None:
+        # self.neighbours = neighbourhood
         self.verbose = verbose
         self.converged = False
         self.x_hist = []
@@ -125,7 +130,7 @@ class NextAscent:
                 warnings.warn("Maximum number of iterations reached.")
                 return
 
-            Nx = self.neighbours(current_sol)
+            Nx = Neighbourhood(current_sol)
 
             # verbose option
 
@@ -134,7 +139,7 @@ class NextAscent:
 
                 if dfx > 0:
                     current_sol = x_new
-                    current_max += dfx
+                    current_max = calc_objective(current_sol)
                     self.x_hist.append(x_new)
                     self.fx_hist.append(current_max)
                     break
@@ -344,3 +349,7 @@ def calc_crucible_value(crucible: Crucible, quality_df=quality_df, tol=1e-5):
                 return value
 
     return value
+
+
+def calc_objective(x):
+    return np.sum([calc_crucible_value(crucible) for crucible in x])
