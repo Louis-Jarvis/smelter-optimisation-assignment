@@ -128,42 +128,43 @@ class NextAscent:
         # self.x_hist.append(x0)
         self.fx_hist.append(f0)
 
-        for i in range(
-            self.max_iter + 1
-        ):  # TODO change this to number of neighbourhood evaluations
-            if i == self.max_iter:
-                warnings.warn("Maximum number of iterations reached.")
-                return
-
+        for i in range(self.max_iter + 1):
             Nx = Neighbourhood(current_sol)
 
             # verbose option
 
-            for x_new, (c1, c2, p1, p1) in Nx:
-                # dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
-                dfx = calc_objective(x_new) - calc_objective(current_sol)
+            x_new = self.evaluate_neighbours(current_sol, Nx)
+            fx_new = calc_objective(x_new)
 
-                # accept the first solution that results in an increased f(x)
-                if dfx > self.tol:
-                    current_sol = x_new
-                    current_max = calc_objective(current_sol)
-                    self.x_hist.append(x_new)
-                    self.fx_hist.append(current_max)
-                    break
-
-            if dfx < self.tol:
+            if np.abs(fx_new - current_max) < self.tol:
                 self.converged = True
-                # self.x_hist.append(x_new)
-                self.fx_hist.append(current_max)
+                self.fx_hist.append(fx_new)
                 self._x = x_new
                 self._fx = current_max
                 return
-            # TODO break when converged
 
+            current_sol = x_new
+            current_max = fx_new
+            self.x_hist.append(x_new)
+            self.fx_hist.append(current_max)
+
+        warnings.warn(f"Maximum number of iterations ({self.max_iter}) reached.")
         return
 
-    def get_solution(self):
+    @property
+    def solution(self):  # what if not converged?
         return self._x, self._fx
+
+    def evaluate_neighbours(self, current_sol, neighbourhood):
+        for x_new, (c1, c2, p1, p1) in neighbourhood:
+            # dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
+            dfx = calc_objective(x_new) - calc_objective(current_sol)
+
+            # accept the first solution that results in an increased f(x)
+            if dfx > self.tol:
+                return x_new
+
+        return current_sol
 
     @staticmethod  # calculate the effect of the swap on objective func
     def calc_delta_fx(x0, x_new, c1, c2):
