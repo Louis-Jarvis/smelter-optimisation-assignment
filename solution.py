@@ -108,7 +108,7 @@ class Neighbourhood:
 
 # TODO create an abstract base class for this
 class NextAscent:
-    max_iter = 500
+    max_iter = 100
     tol = 1e-6
 
     def __init__(self, verbose=False) -> None:
@@ -118,14 +118,19 @@ class NextAscent:
         self.x_hist = []
         self.fx_hist = []
 
+        self._x = None
+        self._fx = None
+
     # TODO progress bar
-    def solve(self, x0, f0):
+    def run_solver(self, x0, f0):
         current_max = f0
         current_sol = x0
-        self.x_hist.append(x0)
+        # self.x_hist.append(x0)
         self.fx_hist.append(f0)
 
-        for i in range(self.max_iter + 1):
+        for i in range(
+            self.max_iter + 1
+        ):  # TODO change this to number of neighbourhood evaluations
             if i == self.max_iter:
                 warnings.warn("Maximum number of iterations reached.")
                 return
@@ -135,26 +140,34 @@ class NextAscent:
             # verbose option
 
             for x_new, (c1, c2, p1, p1) in Nx:
-                dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
+                # dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
+                dfx = calc_objective(x_new) - calc_objective(current_sol)
 
-                if dfx > 0:
+                # accept the first solution that results in an increased f(x)
+                if dfx > self.tol:
                     current_sol = x_new
                     current_max = calc_objective(current_sol)
                     self.x_hist.append(x_new)
                     self.fx_hist.append(current_max)
                     break
 
-            if np.abs(dfx) < self.tol:
+            if dfx < self.tol:
                 self.converged = True
-                self.x_hist.append(x_new)
+                # self.x_hist.append(x_new)
                 self.fx_hist.append(current_max)
+                self._x = x_new
+                self._fx = current_max
                 return
             # TODO break when converged
 
         return
 
+    def get_solution(self):
+        return self._x, self._fx
+
     @staticmethod  # calculate the effect of the swap on objective func
     def calc_delta_fx(x0, x_new, c1, c2):
+        # FIXME this is broken
         # since the solution is additive we can calculate the change in
         delta_1 = calc_crucible_value(x_new[c1]) - calc_crucible_value(x0[c1])
         delta_2 = calc_crucible_value(x_new[c2]) - calc_crucible_value(x0[c2])
