@@ -5,6 +5,7 @@ import pandas as pd
 import itertools
 import warnings
 from copy import deepcopy
+from abc import ABC, abstractmethod
 
 
 # there are 51 pots
@@ -43,10 +44,16 @@ def calc_quality(crucible: Crucible):
     pass  # quality calculation for each crucible
 
 
-# TODO as function
-# class Neighbourhood:
-class Neighbourhood:
-    """Generate neighbouring solutions by swapping two pots from different crucibles.
+class NeighbourhoodRule(ABC):
+    """Interface object that contains logic to generate neighbouring solutions."""
+
+    @abstractmethod
+    def get_neighbours(x: Crucible):
+        pass
+
+
+class Swap2Pots(NeighbourhoodRule):
+    """Concrete implementation for generating neighbouring solutions by swapping two pots from different crucibles.
 
     N(x) = {y(x, p1, p2, c1, c2) :  p1=0,...,50 & p2=0,...,50 & (a != b) & (c1 != c2) }
     - p1 is the index of the first pot
@@ -67,14 +74,14 @@ class Neighbourhood:
         }
     """
 
-    def __init__(self, x: List[Crucible]):
-        self.x = x
+    def __init__(self, verbose=False) -> None:
+        self.verbose = verbose
 
-    def __iter__(self):
+    def get_neighbours(self, x):
         crucible_indices = set(itertools.combinations(range(17), 2))
         pot_indices = set(itertools.combinations(range(3), 2))
 
-        x_i = deepcopy(self.x)
+        x_i = deepcopy(x)
 
         for c1, c2 in crucible_indices:
             if c1 != c2:
@@ -82,26 +89,30 @@ class Neighbourhood:
                 for p1, p2 in pot_indices:
                     if p1 != p2:
                         temp = x_i[c1][p1]
+                        if self.verbose:
+                            print(f"pot {p1}, crucible{c1} -> pot {p2}, crucible {c2}")
 
                         x_i[c1][p1] = x_i[c2][p2]
                         x_i[c2][p2] = temp
 
-                        yield x_i  # (c1, c2, p1, p2)
-
-
-# neighbourhood as a class that is passed to steepest ascent?
+                        yield x_i
 
 
 # TODO create an abstract base class for this
 class NextAscent:
-    max_iter = 500
     tol = 1e-6
 
-    def __init__(self, verbose=False) -> None:
-        # self.neighbours = neighbourhood
+    def __init__(
+        self,
+        neighbourhood: NeighbourhoodRule,
+        verbose: bool = False,
+        max_iter: int = 1000,
+    ) -> None:
+        self.neighbourhood = neighbourhood
         self.verbose = verbose
+        self.max_iter = max_iter
         self.converged = False
-        self.x_hist = []
+
         self.fx_hist = []
 
         self._num_iter = 0
@@ -115,9 +126,7 @@ class NextAscent:
         self.fx_hist.append(f0)
 
         while self._num_iter < self.max_iter:
-            x_neighbours = Neighbourhood(x_current)
-
-            # verbose option #TODO
+            x_neighbours = self.neighbourhood.get_neighbours(x_current)
 
             # Neighbourhood search
             for x_new in x_neighbours:
@@ -126,15 +135,14 @@ class NextAscent:
                 dfx = fx_new - calc_objective(x_current)
 
                 if dfx > self.tol:
+                    if self.verbose:
+                        print(f"Accept Swap: current best fx: {fx_new:.4f}")
                     x_current = x_new
                     fx_current = fx_new
-                    self.x_hist.append(x_new)
                     self.fx_hist.append(fx_current)
 
                 if self._num_iter == self.max_iter:
-                    warnings.warn(
-                        f"Maximum number of iterations ({self.max_iter}) reached."
-                    )
+                    warnings.warn(f"Max iterations ({self.max_iter}) reached.")
                     self._x = x_current
                     self._fx = fx_current
                     break
@@ -274,7 +282,6 @@ PotFe = [
 ]
 
 
-# TODO add fx as an output
 def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
     sol = []
     fx = 0
@@ -293,8 +300,6 @@ def create_init_sol(pot_al=PotAl, pot_fe=PotFe):
 
     return sol, fx
 
-
-# TODO move these into a df
 
 quality_df = pd.DataFrame(
     data={
