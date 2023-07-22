@@ -19,8 +19,6 @@ class Pot:
 @dataclass
 class Crucible:
     pots: List[Pot]
-    # avg_al: float = field(init=False)
-    # avg_fe: float = field(init=False)
 
     @property
     def avg_al(self):
@@ -29,10 +27,6 @@ class Crucible:
     @property
     def avg_fe(self):
         return np.mean([pot.Fe for pot in self.pots])
-
-    # def __post_init__(self):
-    #     self.avg_al = np.mean([pot.Al for pot in self.pots])
-    #     self.avg_fe = np.mean([pot.Fe for pot in self.pots])
 
     def __repr__(self) -> str:
         pot_num = [pot.index for pot in self.pots]
@@ -43,14 +37,6 @@ class Crucible:
 
     def __setitem__(self, i, pot: Pot):
         self.pots[i] = pot
-
-
-# TODO is this class necessary - could move the values into the solution value class?
-
-
-# FIXME
-def calc_objective(solution: List[Crucible]):
-    return np.sum([calc_crucible_value(crucible) for crucible in solution])
 
 
 def calc_quality(crucible: Crucible):
@@ -100,7 +86,7 @@ class Neighbourhood:
                         x_i[c1][p1] = x_i[c2][p2]
                         x_i[c2][p2] = temp
 
-                        yield x_i, (c1, c2, p1, p2)
+                        yield x_i  # (c1, c2, p1, p2)
 
 
 # neighbourhood as a class that is passed to steepest ascent?
@@ -108,7 +94,7 @@ class Neighbourhood:
 
 # TODO create an abstract base class for this
 class NextAscent:
-    max_iter = 100
+    max_iter = 500
     tol = 1e-6
 
     def __init__(self, verbose=False) -> None:
@@ -118,53 +104,55 @@ class NextAscent:
         self.x_hist = []
         self.fx_hist = []
 
+        self._num_iter = 0
         self._x = None
         self._fx = None
 
     # TODO progress bar
     def run_solver(self, x0, f0):
-        current_max = f0
-        current_sol = x0
-        # self.x_hist.append(x0)
+        fx_current = f0
+        x_current = x0
         self.fx_hist.append(f0)
 
-        for i in range(self.max_iter + 1):
-            Nx = Neighbourhood(current_sol)
+        while self._num_iter < self.max_iter:
+            x_neighbours = Neighbourhood(x_current)
 
-            # verbose option
+            # verbose option #TODO
 
-            x_new = self.evaluate_neighbours(current_sol, Nx)
-            fx_new = calc_objective(x_new)
+            # Neighbourhood search
+            for x_new in x_neighbours:
+                self._num_iter += 1
+                fx_new = calc_objective(x_new)
+                dfx = fx_new - calc_objective(x_current)
 
-            if np.abs(fx_new - current_max) < self.tol:
+                if dfx > self.tol:
+                    x_current = x_new
+                    fx_current = fx_new
+                    self.x_hist.append(x_new)
+                    self.fx_hist.append(fx_current)
+
+                if self._num_iter == self.max_iter:
+                    warnings.warn(
+                        f"Maximum number of iterations ({self.max_iter}) reached."
+                    )
+                    self._x = x_current
+                    self._fx = fx_current
+                    break
+
+            # check convergence
+            if np.abs(fx_new - fx_current) < self.tol:
+                print("Converged!")
                 self.converged = True
                 self.fx_hist.append(fx_new)
                 self._x = x_new
-                self._fx = current_max
+                self._fx = fx_current
                 return
 
-            current_sol = x_new
-            current_max = fx_new
-            self.x_hist.append(x_new)
-            self.fx_hist.append(current_max)
-
-        warnings.warn(f"Maximum number of iterations ({self.max_iter}) reached.")
         return
 
     @property
-    def solution(self):  # what if not converged?
+    def solution(self):
         return self._x, self._fx
-
-    def evaluate_neighbours(self, current_sol, neighbourhood):
-        for x_new, (c1, c2, p1, p1) in neighbourhood:
-            # dfx = self.calc_delta_fx(current_sol, x_new, c1, c2)
-            dfx = calc_objective(x_new) - calc_objective(current_sol)
-
-            # accept the first solution that results in an increased f(x)
-            if dfx > self.tol:
-                return x_new
-
-        return current_sol
 
     @staticmethod  # calculate the effect of the swap on objective func
     def calc_delta_fx(x0, x_new, c1, c2):
