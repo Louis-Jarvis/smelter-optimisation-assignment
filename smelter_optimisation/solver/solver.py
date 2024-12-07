@@ -5,19 +5,16 @@ from typing import List
 
 import numpy as np
 
-from ..utils import calc_crucible_value, calculate_objective_value
+from ..utils import calc_crucible_value, calc_objective
 from .neighbourhood_rule import NeighbourhoodRule
-from .solution import Pot, Solution
+from .models import Pot, Solution
 
 TOL = 1e-6
 
 
-# TODO implement an abstract class for this
-class Solver(ABC):
-    pass
-
-
+#TODO implement an abstract class for this
 class NextAscentSolver:
+    """Solver utilising a Next Ascent Greedy Heuristic."""
     def __init__(
         self,
         neighbourhood: NeighbourhoodRule,
@@ -35,7 +32,7 @@ class NextAscentSolver:
         self._x = None
         self._fx = None
 
-    # TODO progress bar
+    #TODO progress bar
     def run_solver(self, initial_solution: Solution):
         current_objective_value = initial_solution.objective_value
         currest_solution = deepcopy(initial_solution.pots_array)
@@ -52,7 +49,7 @@ class NextAscentSolver:
         while True:
             # DO SWAP
 
-            print("new neighbourhood")
+            print("new neighbourhood") #TODO use logger
             neighbourhood = self.neighbourhood_rule.generate_neighbours(currest_solution)
 
             ## Find the best
@@ -62,7 +59,7 @@ class NextAscentSolver:
 
                 # neighbour = doSwap(c1, c2, p1, p2)
 
-                new_objective_value = calculate_objective_value(neighbour)
+                new_objective_value = calc_objective(neighbour)
                 objective_change = new_objective_value - current_objective_value
 
                 if objective_change > TOL:

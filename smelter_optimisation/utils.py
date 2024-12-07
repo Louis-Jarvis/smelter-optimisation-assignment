@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 from .config import quality_table
-from .solver.crucible import Crucible
-from .solver.pot import Pot
+from .solver.models import Crucible, Pot
 
 
 def calc_crucible_value(crucible: Crucible, quality_df=quality_table):
