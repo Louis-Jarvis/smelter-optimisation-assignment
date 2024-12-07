@@ -1,4 +1,5 @@
 """Classes to generate solutions adjascent to the current pot arrangement."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -7,9 +8,7 @@ from typing import Any, Generator
 
 from numpy.typing import NDArray
 
-#TODO put in a config
-NUM_CRUCIBLES = 17
-POTS_PER_CRUCIBLE = 3
+from ..config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
 
 
 class NeighbourhoodRule(ABC):
