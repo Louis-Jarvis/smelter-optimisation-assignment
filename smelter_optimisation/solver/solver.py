@@ -6,12 +6,17 @@ from copy import deepcopy
 from typing import List
 
 import numpy as np
+import matplotlib.pyplot as plt
 
-from ..utils import calc_crucible_value, calc_objective
+
+from ..utils import calc_crucible_value
 from .models import Pot, Solution
 from .neighbourhood_rule import NeighbourhoodRule
 
 TOL = 1e-6
+
+def _calculate_objective_value(x):
+    return np.sum([calc_crucible_value(crucible) for crucible in x])
 
 
 def _calc_delta_fx(x0, x_new, c1, c2) -> float:
@@ -34,6 +39,10 @@ class SmeltingOptimisationSolver(ABC):
     @abstractmethod
     def solution(self):
         """Best solution found."""
+        pass
+
+    @abstractmethod
+    def plot_objective(self):
         pass
 
 
@@ -68,13 +77,13 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self._fx = None
 
     # TODO progress bar
-    def run_solver(self, initial_solution: Solution):
+    def run_solver(self, initial_solution):
         """Generate solution."""
-        current_objective_value = initial_solution.objective_value
-        current_solution = deepcopy(initial_solution.pots_array)
+        current_objective_value = _calculate_objective_value(initial_solution)
+        current_solution = deepcopy(initial_solution)
 
-        best_neighbour = deepcopy(initial_solution.pots_array)
-        neighbour_value = initial_solution.objective_value
+        best_neighbour = deepcopy(initial_solution)
+        neighbour_value = current_objective_value
 
         self.objective_value_history.append(current_objective_value)
 
@@ -93,14 +102,17 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
                 # neighbour = doSwap(c1, c2, p1, p2)
 
-                new_objective_value = calc_objective(neighbour)
+                new_objective_value = _calculate_objective_value(neighbour)
                 objective_change = new_objective_value - current_objective_value
+
+                self.objective_value_history.append(new_objective_value)
 
                 if objective_change > TOL:
                     if self.verbose:
                         print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
                     best_neighbour = deepcopy(neighbour)
                     neighbour_value = new_objective_value
+
                     break
 
                 if self._num_iter == self.max_iter:
@@ -116,8 +128,16 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
+                
+    def plot_objective(self):
+        _, ax = plt.subplots()
 
-        return  # Solution(current_objective_value, current_pots_array)
+        x = np.arange(0, len(self.objective_value_history))
+        ax.plot(x, self.objective_value_history)
+
+        ax.set(xlabel="Function Evaluations", ylabel="Objective Function Value f(x)")
+
+        plt.show()
 
     # def _find_best_neighbour(self, neighbourhood):
 
