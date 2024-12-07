@@ -37,9 +37,10 @@ jobs:
     # TODO fix when the tests are implemented
     # - name: Run the automated tests (for example)
     #   run: poetry run pytest -v
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Install the code linting and formatting tool Ruff
+      run: pipx install ruff
+    - name: Lint code with Ruff
+      run: ruff check --output-format=github --target-version=py39
+    - name: Check code formatting with Ruff
+      run: ruff format --diff --target-version=py39
+      continue-on-error: true
