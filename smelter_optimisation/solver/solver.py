@@ -1,3 +1,5 @@
+"""Different heuristic solvers for the smelter optimisation solver."""
+
 import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -6,21 +8,54 @@ from typing import List
 import numpy as np
 
 from ..utils import calc_crucible_value, calc_objective
-from .neighbourhood_rule import NeighbourhoodRule
 from .models import Pot, Solution
+from .neighbourhood_rule import NeighbourhoodRule
 
 TOL = 1e-6
 
 
-#TODO implement an abstract class for this
-class NextAscentSolver:
+def _calc_delta_fx(x0, x_new, c1, c2) -> float:
+    # FIXME this is broken
+    # since the solution is additive we can calculate the change in
+    delta_1 = calc_crucible_value(x_new[c1]) - calc_crucible_value(x0[c1])
+    delta_2 = calc_crucible_value(x_new[c2]) - calc_crucible_value(x0[c2])
+    return delta_1 + delta_2
+
+
+class SmeltingOptimisationSolver(ABC):
+    """Smelter optimisation problem solver heuristic."""
+
+    @abstractmethod
+    def run_solver(self, initial_solution: Solution):
+        """Generate solution."""
+        pass
+
+    @property
+    @abstractmethod
+    def solution(self):
+        """Best solution found."""
+        pass
+
+
+class NextAscentSolver(SmeltingOptimisationSolver):
     """Solver utilising a Next Ascent Greedy Heuristic."""
+
     def __init__(
         self,
         neighbourhood: NeighbourhoodRule,
         verbose: bool = False,
         max_iter: int = 5000,
     ) -> None:
+        """Initialise Next Ascent Solver.
+
+        :param neighbourhood: neighborhood rule that defines neighbours
+        adjacent to the current pot.
+        :type neighbourhood: NeighbourhoodRule
+        :param verbose: verbosity, defaults to False
+        :type verbose: bool, optional
+        :param max_iter: maximum iteration count, defaults to 5000
+        :type max_iter: int, optional
+        """
         self.neighbourhood_rule = neighbourhood
         self.verbose = verbose
         self.max_iter = max_iter
@@ -32,10 +67,11 @@ class NextAscentSolver:
         self._x = None
         self._fx = None
 
-    #TODO progress bar
+    # TODO progress bar
     def run_solver(self, initial_solution: Solution):
+        """Generate solution."""
         current_objective_value = initial_solution.objective_value
-        currest_solution = deepcopy(initial_solution.pots_array)
+        current_solution = deepcopy(initial_solution.pots_array)
 
         best_neighbour = deepcopy(initial_solution.pots_array)
         neighbour_value = initial_solution.objective_value
@@ -44,17 +80,15 @@ class NextAscentSolver:
 
         # neighourhood = self.neighbourhood_rule.get_neighbours(current_pots_array)
 
-        self._counter = 0
-
         while True:
             # DO SWAP
 
-            print("new neighbourhood") #TODO use logger
-            neighbourhood = self.neighbourhood_rule.generate_neighbours(currest_solution)
+            print("new neighbourhood")  # TODO use logger
+            neighbourhood = self.neighbourhood_rule.generate_neighbours(current_solution)
 
             ## Find the best
             for neighbour in neighbourhood:
-                self._counter += 1
+                self._num_iter += 1
                 # print(neighbour, end="\n\n")
 
                 # neighbour = doSwap(c1, c2, p1, p2)
@@ -69,18 +103,18 @@ class NextAscentSolver:
                     neighbour_value = new_objective_value
                     break
 
-                if self._counter == self.max_iter:
+                if self._num_iter == self.max_iter:
                     break
 
             if np.abs(current_objective_value - neighbour_value) < TOL:
                 print("Woooo ")
                 return
             elif current_objective_value < neighbour_value:
-                currest_solution = deepcopy(best_neighbour)
+                current_solution = deepcopy(best_neighbour)
                 current_objective_value = neighbour_value
             else:
-                if self._counter == self.max_iter:
-                    warnings.warn(f"Max iterations ({self.max_iter}) reached.")
+                if self._num_iter == self.max_iter:
+                    warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
 
         return  # Solution(current_objective_value, current_pots_array)
@@ -110,15 +144,8 @@ class NextAscentSolver:
 
     @property
     def solution(self) -> tuple[List[Pot], float]:
+        """Best solution found."""
         return self._x, self._fx
-
-    @staticmethod  # calculate the effect of the swap on objective func
-    def calc_delta_fx(x0, x_new, c1, c2) -> float:
-        # FIXME this is broken
-        # since the solution is additive we can calculate the change in
-        delta_1 = calc_crucible_value(x_new[c1]) - calc_crucible_value(x0[c1])
-        delta_2 = calc_crucible_value(x_new[c2]) - calc_crucible_value(x0[c2])
-        return delta_1 + delta_2
 
 
 # def doSwap():
