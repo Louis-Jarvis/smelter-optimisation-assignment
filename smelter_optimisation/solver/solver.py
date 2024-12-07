@@ -13,6 +13,7 @@ from ..utils import calc_crucible_value
 from .models import Pot, Solution
 from .neighbourhood_rule import NeighbourhoodRule
 
+
 def _calculate_objective_value(x):
     return np.sum([calc_crucible_value(crucible) for crucible in x])
 
