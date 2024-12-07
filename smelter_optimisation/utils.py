@@ -33,11 +33,4 @@ def create_init_sol(initial_solution_df: pd.DataFrame):
         )
 
         sol.append(crucible_i)
-
-    fx = calc_objective(sol)
-
-    return sol, fx
-
-
-def calc_objective(x):
-    return np.sum([calc_crucible_value(crucible) for crucible in x])
+    return sol
