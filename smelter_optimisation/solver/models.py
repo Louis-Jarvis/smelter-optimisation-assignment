@@ -1,7 +1,10 @@
+"""Logical data models for the smelting optimisiation problem."""
+
 from dataclasses import dataclass
 from typing import List
 
 import numpy as np
+
 
 @dataclass
 class Pot:
@@ -36,6 +39,6 @@ class Crucible:
         self.pots[i] = pot
 
 @dataclass
-class Solution:
+class Solution: # noqa: D101
     objective_value: float
     solution: Crucible
