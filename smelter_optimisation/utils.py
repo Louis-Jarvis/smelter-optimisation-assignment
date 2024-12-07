@@ -1,11 +1,22 @@
-import numpy as np
+"""Miscellaneous utility functions."""
+
 import pandas as pd
 
 from .config import quality_table
 from .solver.models import Crucible, Pot
 
 
-def calc_crucible_value(crucible: Crucible, quality_df=quality_table):
+def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame=quality_table) -> float:
+    """Calculate the dollar value of an individual crucible.
+
+    :param crucible: solution.
+    :type crucible: Crucible
+    :param quality_df: table mapping proportion of iron and aluminium to value,
+    defaults to quality_table
+    :type quality_df: pd.DataFrame, optional
+    :return: the dollar value of the crucible.
+    :rtype: float
+    """
     tol = 1e-5
     value = 0
     # TODO vectorise this
@@ -18,8 +29,15 @@ def calc_crucible_value(crucible: Crucible, quality_df=quality_table):
     return value
 
 
-def create_init_sol(initial_solution_df: pd.DataFrame):
-    pot_al, pot_fe = initial_solution_df["PotAl"], initial_solution_df["PotFe"]
+def create_init_sol(initial_solution: pd.DataFrame) -> list[Crucible]:
+    """Create an initial Crucible arrangement from csv of pots.
+
+    :param initial_solution: table of pot aluminium and iron.
+    :type initial_solution: pd.DataFrame
+    :return: initial arrangement of pots.
+    :rtype: list[Crucible]
+    """
+    pot_al, pot_fe = initial_solution["PotAl"], initial_solution["PotFe"]
 
     sol = []
 
