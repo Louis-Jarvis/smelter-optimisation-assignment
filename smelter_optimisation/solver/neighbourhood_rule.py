@@ -1,19 +1,22 @@
+"""Classes to generate solutions adjascent to the current pot arrangement."""
+
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-
-from .crucible import Crucible
 from copy import deepcopy
-import itertools
-import numpy as np
+from typing import Any, Generator
 
-NUM_CRUCIBLES = 17
-POTS_PER_CRUCIBLE = 3
+from numpy.typing import NDArray
+
+from ..config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
 
 
 class NeighbourhoodRule(ABC):
     """Interface object that contains logic to generate neighbouring solutions."""
 
     @abstractmethod
-    def generate_neighbours(x: Crucible):
+    def generate_neighbours(self, current_solution):
+        """Create neighbouring solutions according to neighbourhood rule."""
         pass
 
 
@@ -37,67 +40,25 @@ class Swap2PotsRule(NeighbourhoodRule):
        = xi otherwise
     """
 
-    # def __init__(self, verbose=False) -> None:
-    #     self.verbose = verbose
+    def generate_neighbours(self, current_solution: NDArray[Any]) -> Generator[NDArray[Any]]:
+        """Generate a series of neighbours around a solution by swapping two pots.
 
-    def generate_neighbours(self, pots_array):
-        # swapped_array = deepcopy(pots_array)
-
-        crucible_indices = itertools.combinations(range(NUM_CRUCIBLES), 2)
-        pot_indices = itertools.combinations(range(POTS_PER_CRUCIBLE), 2)
-
-        # for crucible_1, crucible_2 in crucible_indices:
-        #     if crucible_1 != crucible_2:
-        #         for pot_1, pot_2 in pot_indices:
-        #             if pot_1 != pot_2:
-        #                 swapped_array = deepcopy(pots_array)
-        #                 print(
-        #                     f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}"
-        #                 )
-        #                 temp = swapped_array[crucible_1][pot_1]
-
-        #                 swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][
-        #                     pot_2
-        #                 ]
-        #                 swapped_array[crucible_2][pot_2] = temp
-
-        #                 # yield crucible_1, crucible_2, pot_1, pot_2
-        #                 yield swapped_array
-
+        :param current_solution: current array.
+        :type current_solution: NDArray[Any]
+        :yield: array with two pots swapped.
+        :rtype: Generator[NDArray[Any]]
+        """
         for crucible_1 in range(0, NUM_CRUCIBLES):
             for crucible_2 in range(0, NUM_CRUCIBLES):
                 if crucible_1 != crucible_2:
                     for pot_1 in range(0, POTS_PER_CRUCIBLE):
                         for pot_2 in range(0, POTS_PER_CRUCIBLE):
                             if pot_1 != pot_2:
-                                swapped_array = deepcopy(pots_array)
-                                print(
-                                    f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}"
-                                )
+                                swapped_array = deepcopy(current_solution)
+                                print(f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}")
                                 temp = swapped_array[crucible_1][pot_1]
 
-                                swapped_array[crucible_1][pot_1] = swapped_array[
-                                    crucible_2
-                                ][pot_2]
+                                swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][pot_2]
                                 swapped_array[crucible_2][pot_2] = temp
 
-                                # yield crucible_1, crucible_2, pot_1, pot_2
                                 yield swapped_array
-
-        # x_i = deepcopy(x)  # NEEd this due to lists being mutable
-
-        # for c1, c2 in crucible_indices:
-        #     if c1 != c2:
-        #         for p1, p2 in pot_indices:
-        #             if p1 != p2:
-        #                 temp = x_i[c1][p1]
-        #                 if self.verbose:
-        #                     print(f"pot {p1}, crucible{c1} -> pot {p2}, crucible {c2}")
-
-        #                 x_i[c1][p1] = x_i[c2][p2]
-        #                 x_i[c2][p2] = temp
-
-        #                 yield x_i
-
-
-# TODO modify this
