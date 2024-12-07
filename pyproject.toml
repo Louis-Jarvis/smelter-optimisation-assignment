@@ -36,7 +36,8 @@ select = [
 ignore = [
     "C901",  # too complex
     "W191",  # indentation contains tabs
-    "D401"  # imperative mood
+    "D401",  # imperative mood
+    "D105"   # missing docstring in average method.
 ]
 
 [tool.ruff.lint.pydocstyle]

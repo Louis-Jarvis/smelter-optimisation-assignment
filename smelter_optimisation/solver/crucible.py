@@ -12,10 +12,12 @@ class Crucible:
 
     @property
     def avg_al(self) -> float:
+        """Average Alumnium % of the crucible."""
         return np.mean([pot.Al for pot in self.pots])
 
     @property
     def avg_fe(self) -> float:
+        """Average Iron % of the crucible."""
         return np.mean([pot.Fe for pot in self.pots])
 
     def __repr__(self) -> str:
