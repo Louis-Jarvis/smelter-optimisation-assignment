@@ -5,15 +5,13 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import List
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-
+from .. import config
 from ..utils import calc_crucible_value
 from .models import Pot, Solution
 from .neighbourhood_rule import NeighbourhoodRule
-
-TOL = 1e-6
 
 def _calculate_objective_value(x):
     return np.sum([calc_crucible_value(crucible) for crucible in x])
@@ -43,6 +41,7 @@ class SmeltingOptimisationSolver(ABC):
 
     @abstractmethod
     def plot_objective(self):
+        """Plot the objective function against the number of function evaluations."""
         pass
 
 
@@ -107,7 +106,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
                 self.objective_value_history.append(new_objective_value)
 
-                if objective_change > TOL:
+                if objective_change > config.TOL:
                     if self.verbose:
                         print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
                     best_neighbour = deepcopy(neighbour)
@@ -118,7 +117,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 if self._num_iter == self.max_iter:
                     break
 
-            if np.abs(current_objective_value - neighbour_value) < TOL:
+            if np.abs(current_objective_value - neighbour_value) < config.TOL:
                 print("Woooo ")
                 return
             elif current_objective_value < neighbour_value:
@@ -128,8 +127,9 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
-                
+
     def plot_objective(self):
+        """Plot the objective function against the number of function evaluations."""
         _, ax = plt.subplots()
 
         x = np.arange(0, len(self.objective_value_history))
