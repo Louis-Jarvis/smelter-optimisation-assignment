@@ -9,13 +9,16 @@ import numpy as np
 @dataclass
 class Pot:
     """Container representing a a mixture of iron and aluminium ore."""
+
     index: int
     alumnium_pct: float
     iron_pct: float
 
+
 @dataclass
 class Crucible:
     """Container representing a crucible of 3 pots."""
+
     pots: List[Pot]
 
     @property
@@ -38,7 +41,8 @@ class Crucible:
     def __setitem__(self, i, pot: Pot) -> None:
         self.pots[i] = pot
 
+
 @dataclass
-class Solution: # noqa: D101
+class Solution:  # noqa: D101
     objective_value: float
     solution: Crucible
