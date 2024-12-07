@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .config import quality_table
 from .solver.crucible import Crucible

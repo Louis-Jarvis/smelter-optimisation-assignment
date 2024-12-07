@@ -1,9 +1,10 @@
+import itertools
 from abc import ABC, abstractmethod
+from copy import deepcopy
+
+import numpy as np
 
 from .crucible import Crucible
-from copy import deepcopy
-import itertools
-import numpy as np
 
 NUM_CRUCIBLES = 17
 POTS_PER_CRUCIBLE = 3
@@ -13,7 +14,7 @@ class NeighbourhoodRule(ABC):
     """Interface object that contains logic to generate neighbouring solutions."""
 
     @abstractmethod
-    def generate_neighbours(x: Crucible):
+    def generate_neighbours(self, x: Crucible):
         pass
 
 
@@ -71,14 +72,10 @@ class Swap2PotsRule(NeighbourhoodRule):
                         for pot_2 in range(0, POTS_PER_CRUCIBLE):
                             if pot_1 != pot_2:
                                 swapped_array = deepcopy(pots_array)
-                                print(
-                                    f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}"
-                                )
+                                print(f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}")
                                 temp = swapped_array[crucible_1][pot_1]
 
-                                swapped_array[crucible_1][pot_1] = swapped_array[
-                                    crucible_2
-                                ][pot_2]
+                                swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][pot_2]
                                 swapped_array[crucible_2][pot_2] = temp
 
                                 # yield crucible_1, crucible_2, pot_1, pot_2

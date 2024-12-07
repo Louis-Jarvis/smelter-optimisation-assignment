@@ -1,13 +1,13 @@
-from abc import ABC, abstractmethod
-import numpy as np
 import warnings
-from typing import List
+from abc import ABC, abstractmethod
 from copy import deepcopy
+from typing import List
 
+import numpy as np
+
+from ..utils import calc_crucible_value, calculate_objective_value
 from .neighbourhood_rule import NeighbourhoodRule
-from ..utils import calculate_objective_value, calc_crucible_value
-from .solution import Solution
-from .solution import Pot
+from .solution import Pot, Solution
 
 TOL = 1e-6
 
@@ -53,9 +53,7 @@ class NextAscentSolver:
             # DO SWAP
 
             print("new neighbourhood")
-            neighbourhood = self.neighbourhood_rule.generate_neighbours(
-                currest_solution
-            )
+            neighbourhood = self.neighbourhood_rule.generate_neighbours(currest_solution)
 
             ## Find the best
             for neighbour in neighbourhood:
@@ -69,9 +67,7 @@ class NextAscentSolver:
 
                 if objective_change > TOL:
                     if self.verbose:
-                        print(
-                            f"Accept Swap: current best fx: {new_objective_value:.4f}"
-                        )
+                        print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
                     best_neighbour = deepcopy(neighbour)
                     neighbour_value = new_objective_value
                     break

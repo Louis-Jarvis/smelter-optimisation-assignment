@@ -1,15 +1,13 @@
-from smelter_optimisation.solver.solver import NextAscentSolver
-from smelter_optimisation.solver.neighbourhood_rule import Swap2PotsRule
-from smelter_optimisation.utils import create_init_sol
 from smelter_optimisation.plot_objective import plot_objective
+from smelter_optimisation.solver.neighbourhood_rule import Swap2PotsRule
+from smelter_optimisation.solver.solver import NextAscentSolver
+from smelter_optimisation.utils import create_init_sol
 
 
 def main() -> None:
     xi, fi = create_init_sol()
 
-    solver = NextAscentSolver(
-        neighbourhood=Swap2PotsRule(verbose=True), verbose=True, max_iter=100
-    )
+    solver = NextAscentSolver(neighbourhood=Swap2PotsRule(verbose=True), verbose=True, max_iter=100)
 
     solver.run_solver(xi, fi)
 

@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pandas as pd
 
 INITIAL_SOL_PATH = Path("data/initial_solution.csv")
