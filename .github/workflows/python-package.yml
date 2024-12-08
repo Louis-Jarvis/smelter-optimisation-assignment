@@ -34,9 +34,8 @@ jobs:
         key: venv-${{ hashFiles('poetry.lock') }}
     - name: Install the project dependencies
       run: poetry install
-    # TODO fix when the tests are implemented
-    # - name: Run the automated tests (for example)
-    #   run: poetry run pytest -v
+    - name: Run the automated tests (for example)
+      run: poetry run pytest -v
     - name: Install the code linting and formatting tool Ruff
       run: pipx install ruff
     - name: Lint code with Ruff
