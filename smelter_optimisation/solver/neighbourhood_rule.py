@@ -59,7 +59,6 @@ class Swap2PotsRule(NeighbourhoodRule):
         :yield: array with two pots swapped.
         :rtype: Generator[NDArray[Any]]
         """
-
         for crucible_1 in range(0, self.num_crucibles):
             for crucible_2 in range(0, self.num_crucibles):
                 if crucible_1 < crucible_2:
