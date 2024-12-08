@@ -2,7 +2,6 @@
 
 import warnings
 from abc import ABC, abstractmethod
-from copy import deepcopy
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -87,7 +86,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self.objective_value_history.append(self._current_value)
 
         while True:
-
             print("new neighbourhood")  # TODO use logger
             neighbourhood = self.neighbourhood_rule.generate_neighbours(self._current_solution)
 
@@ -103,15 +101,15 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 if (new_objective_value - self._current_value) > config.TOL:
                     if self.verbose:
                         print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
-                    
+
                     self._current_solution = neighbour
                     self._current_value = new_objective_value
                     break
-                
+
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
-                
+
                 # best value in neighbourhood
                 optimal_value = self._current_value
 
@@ -139,4 +137,3 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     def solution(self) -> tuple[List[Pot], float]:
         """Best solution found."""
         return self._current_solution, self._current_value
-
