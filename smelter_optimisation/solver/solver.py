@@ -10,7 +10,7 @@ import numpy as np
 
 from .. import config
 from ..utils import calc_crucible_value
-from .models import Pot, Crucible
+from .models import Crucible, Pot
 from .neighbourhood_rule import NeighbourhoodRule
 
 
@@ -73,55 +73,53 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self.objective_value_history = []
 
         self._num_iter = 0
-        self._x = None
-        self._fx = None
+        self._current_solution = None
+        self._current_value = None
 
     # TODO progress bar
     def run_solver(self, initial_solution):
         """Generate solution."""
-        current_objective_value = self._calculate_objective_value(initial_solution)
-        current_solution = deepcopy(initial_solution)
+        optimal_value = self._calculate_objective_value(initial_solution)
 
-        best_neighbour = deepcopy(initial_solution)
-        neighbour_value = current_objective_value
+        self._current_solution = initial_solution
+        self._current_value = optimal_value
 
-        self.objective_value_history.append(current_objective_value)
+        self.objective_value_history.append(self._current_value)
 
         while True:
 
             print("new neighbourhood")  # TODO use logger
-            neighbourhood = self.neighbourhood_rule.generate_neighbours(current_solution)
+            neighbourhood = self.neighbourhood_rule.generate_neighbours(self._current_solution)
 
-            ## Find the best
+            # explore neighbourhood for increase in objective value
             for neighbour in neighbourhood:
                 self._num_iter += 1
 
                 # evaluate neighbour
                 new_objective_value = self._calculate_objective_value(neighbour)
-                objective_change = new_objective_value - current_objective_value
-
                 self.objective_value_history.append(new_objective_value)
 
                 # check for improvement
-                if objective_change > config.TOL:
+                if (new_objective_value - self._current_value) > config.TOL:
                     if self.verbose:
                         print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
-                    best_neighbour = deepcopy(neighbour)
-
+                    
+                    self._current_solution = neighbour
+                    self._current_value = new_objective_value
                     break
-
+                
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
+                
+                # best value in neighbourhood
+                optimal_value = self._current_value
 
-            if np.abs(current_objective_value - best_neighbour) < config.TOL:
+            # check convergence
+            if np.abs(self._current_value - optimal_value) < config.TOL:
                 self.converged = True
                 print("Woooo ")
                 return
-            
-            if current_objective_value < neighbour_value:
-                current_solution = deepcopy(best_neighbour)
-                current_objective_value = neighbour_value
 
     def _calculate_objective_value(self, x):
         return np.sum([calc_crucible_value(crucible) for crucible in x])
@@ -140,5 +138,5 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     @property
     def solution(self) -> tuple[List[Pot], float]:
         """Best solution found."""
-        return self._x, self._fx
+        return self._current_solution, self._current_value
 
