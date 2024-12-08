@@ -40,7 +40,14 @@ class Swap2PotsRule(NeighbourhoodRule):
        = xi otherwise
     """
 
-    def __init__(self, num_crucibles=NUM_CRUCIBLES, pots_per_crucible=POTS_PER_CRUCIBLE) -> None:
+    def __init__(self, num_crucibles: int = NUM_CRUCIBLES, pots_per_crucible: int = POTS_PER_CRUCIBLE) -> None:
+        """Initialise an instance of Swap2PotsRule.
+
+        :param num_crucibles: number of crucibles, defaults to NUM_CRUCIBLES
+        :type num_crucibles: int, optional
+        :param pots_per_crucible: number of pots in each crucible, defaults to POTS_PER_CRUCIBLE
+        :type pots_per_crucible: int, optional
+        """
         self.num_crucibles = num_crucibles
         self.pots_per_crucible = pots_per_crucible
 
