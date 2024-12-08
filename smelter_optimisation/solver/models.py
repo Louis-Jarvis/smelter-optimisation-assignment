@@ -40,9 +40,3 @@ class Crucible:
 
     def __setitem__(self, i, pot: Pot) -> None:
         self.pots[i] = pot
-
-
-@dataclass
-class Solution:  # noqa: D101
-    objective_value: float
-    solution: Crucible
