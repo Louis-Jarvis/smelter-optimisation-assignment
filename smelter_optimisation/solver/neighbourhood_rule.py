@@ -40,6 +40,10 @@ class Swap2PotsRule(NeighbourhoodRule):
        = xi otherwise
     """
 
+    def __init__(self, num_crucibles=NUM_CRUCIBLES, pots_per_crucible=POTS_PER_CRUCIBLE) -> None:
+        self.num_crucibles = num_crucibles
+        self.pots_per_crucible = pots_per_crucible
+
     def generate_neighbours(self, current_solution: NDArray[Any]) -> Generator[NDArray[Any]]:
         """Generate a series of neighbours around a solution by swapping two pots.
 
@@ -48,14 +52,18 @@ class Swap2PotsRule(NeighbourhoodRule):
         :yield: array with two pots swapped.
         :rtype: Generator[NDArray[Any]]
         """
-        for crucible_1 in range(0, NUM_CRUCIBLES):
-            for crucible_2 in range(0, NUM_CRUCIBLES):
-                if crucible_1 != crucible_2:
-                    for pot_1 in range(0, POTS_PER_CRUCIBLE):
-                        for pot_2 in range(0, POTS_PER_CRUCIBLE):
-                            if pot_1 != pot_2:
+
+        for crucible_1 in range(0, self.num_crucibles):
+            for crucible_2 in range(0, self.num_crucibles):
+                if crucible_1 < crucible_2:
+                    # stop equivalent swaps being duplicated
+                    # pot 0, crucible 1 <-> pot 1, crucible 0
+                    # pot 1, crucible 0 <-> pot 0, crucible 1
+                    for pot_1 in range(0, self.pots_per_crucible):
+                        for pot_2 in range(0, self.pots_per_crucible):
+                            if pot_1 < pot_2:
                                 swapped_array = deepcopy(current_solution)
-                                print(f"pot {pot_1}, crucible{crucible_1} -> pot {pot_2}, crucible {crucible_2}")
+                                print(f"pot {pot_1}, crucible {crucible_1} <-> pot {pot_2}, crucible {crucible_2}")
                                 temp = swapped_array[crucible_1][pot_1]
 
                                 swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][pot_2]
