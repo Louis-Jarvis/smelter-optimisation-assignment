@@ -7,3 +7,8 @@ My attempt at re-doing an old university optimisation assignment in python :)
 pipx install poetry
 poetry install
 ```
+
+# Testing 
+```bash
+poetry run pytest
+```
