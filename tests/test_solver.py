@@ -64,19 +64,23 @@ def test_solver_max_iter_reached(initial_solution):
         assert mock_calculate.call_count == max_iter + 1  # extra evaluation call at the start.
         assert solver._num_iter == max_iter
 
+@pytest.mark.filterwarnings("ignore:Max iterations (10) reached.")
 def test_solver_improvement_in_objective_value(initial_solution):
-    """Check solver handles improvement in objective value"""
+    """Check solver continues to improve in objective value"""
     with mock.patch("smelter_optimisation.solver.solver.NextAscentSolver._calculate_objective_value") as mock_calculate:
-        initial_value = 700
-        improved_value = initial_value + 10
-        mock_calculate.return_value = improved_value
+        mock_calculate.side_effect = [700, 690, 730, 650, 620, 600, 780, 810, 750, 760, 730]
 
         # Define a mock neighbourhood rule that improves the solution
-        ImprovedNeighbourhoodRule = mock.MagicMock()
-        ImprovedNeighbourhoodRule.generate_neighbours.return_value = [initial_solution]
+        mock_neighbourhood_rule = mock.MagicMock()
+        mock_neighbourhood_rule.generate_neighbours.return_value = [initial_solution] * 10
 
-        solver = NextAscentSolver(neighbourhood=ImprovedNeighbourhoodRule())
+        solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, max_iter=10)
 
         solver.run_solver(initial_solution)
 
-        assert solver.objective_value_history[-1] == improved_value
+        _, fi = solver.solution
+
+        assert mock_calculate.call_count == 11
+        assert fi == 810
+        assert solver.objective_value_history[-1] == 730
+
