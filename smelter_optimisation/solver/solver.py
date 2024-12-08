@@ -10,12 +10,8 @@ import numpy as np
 
 from .. import config
 from ..utils import calc_crucible_value
-from .models import Pot, Solution
+from .models import Pot, Crucible
 from .neighbourhood_rule import NeighbourhoodRule
-
-
-def _calculate_objective_value(x):
-    return np.sum([calc_crucible_value(crucible) for crucible in x])
 
 
 def _calc_delta_fx(x0, x_new, c1, c2) -> float:
@@ -30,7 +26,7 @@ class SmeltingOptimisationSolver(ABC):
     """Smelter optimisation problem solver heuristic."""
 
     @abstractmethod
-    def run_solver(self, initial_solution: Solution):
+    def run_solver(self, initial_solution: list[Crucible]):
         """Generate solution."""
         pass
 
@@ -43,6 +39,10 @@ class SmeltingOptimisationSolver(ABC):
     @abstractmethod
     def plot_objective(self):
         """Plot the objective function against the number of function evaluations."""
+        pass
+
+    @abstractmethod
+    def _calculate_objective_value(self, x):
         pass
 
 
@@ -79,7 +79,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     # TODO progress bar
     def run_solver(self, initial_solution):
         """Generate solution."""
-        current_objective_value = _calculate_objective_value(initial_solution)
+        current_objective_value = self._calculate_objective_value(initial_solution)
         current_solution = deepcopy(initial_solution)
 
         best_neighbour = deepcopy(initial_solution)
@@ -87,10 +87,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
         self.objective_value_history.append(current_objective_value)
 
-        # neighourhood = self.neighbourhood_rule.get_neighbours(current_pots_array)
-
         while True:
-            # DO SWAP
 
             print("new neighbourhood")  # TODO use logger
             neighbourhood = self.neighbourhood_rule.generate_neighbours(current_solution)
@@ -98,36 +95,36 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             ## Find the best
             for neighbour in neighbourhood:
                 self._num_iter += 1
-                # print(neighbour, end="\n\n")
 
-                # neighbour = doSwap(c1, c2, p1, p2)
-
-                new_objective_value = _calculate_objective_value(neighbour)
+                # evaluate neighbour
+                new_objective_value = self._calculate_objective_value(neighbour)
                 objective_change = new_objective_value - current_objective_value
 
                 self.objective_value_history.append(new_objective_value)
 
+                # check for improvement
                 if objective_change > config.TOL:
                     if self.verbose:
                         print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
                     best_neighbour = deepcopy(neighbour)
-                    neighbour_value = new_objective_value
 
                     break
 
-                if self._num_iter == self.max_iter:
-                    break
-
-            if np.abs(current_objective_value - neighbour_value) < config.TOL:
-                print("Woooo ")
-                return
-            elif current_objective_value < neighbour_value:
-                current_solution = deepcopy(best_neighbour)
-                current_objective_value = neighbour_value
-            else:
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
                     return
+
+            if np.abs(current_objective_value - best_neighbour) < config.TOL:
+                self.converged = True
+                print("Woooo ")
+                return
+            
+            if current_objective_value < neighbour_value:
+                current_solution = deepcopy(best_neighbour)
+                current_objective_value = neighbour_value
+
+    def _calculate_objective_value(self, x):
+        return np.sum([calc_crucible_value(crucible) for crucible in x])
 
     def plot_objective(self):
         """Plot the objective function against the number of function evaluations."""
@@ -140,37 +137,8 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
         plt.show()
 
-    # def _find_best_neighbour(self, neighbourhood):
-
-    #     sol =
-
-    #     for neighbour in neighbourhood:
-    #         self._counter += 1
-    #         # print(neighbour, end="\n\n")
-
-    #         # neighbour = doSwap(c1, c2, p1, p2)
-
-    #         new_objective_value = calculate_objective_value(neighbour)
-    #         objective_change = new_objective_value - self.current_objective_value
-
-    #         if objective_change > self.tol:
-    #             if self.verbose:
-    #                 print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
-
-    #             return
-    #     return sol, fx
-
-    # def _check_convergence(self, new_objective_value, current_objective):
-    #     return np.abs(new_objective_value - current_objective) < self.tol
-
     @property
     def solution(self) -> tuple[List[Pot], float]:
         """Best solution found."""
         return self._x, self._fx
 
-
-# def doSwap():
-#     temp = swapped_array[crucible_1][pot_1]
-
-#     swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][pot_2]
-#     swapped_array[crucible_2][pot_2] = temp
