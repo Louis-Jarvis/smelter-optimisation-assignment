@@ -1,0 +1,20 @@
+site_name: Smelter Optimisation Assignment
+
+theme:
+  name: "material"
+
+nav:
+  - Home: index.md
+  - Code Reference:
+    - Solver: solver.md
+    - Models: models.md
+    - Neighbourhood Rule: neighbourhood.md
+    - Utils: utils.md
+  
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [smelter_optimisation]  # search packages here
+        options:
+          docstring_style: sphinx
