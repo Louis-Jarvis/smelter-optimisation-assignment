@@ -1,5 +1,5 @@
 import pytest
-from smelter_optimisation.solver.models import Pot, Crucible  # Update this import as needed
+from smelter_optimisation.models import Pot, Crucible  # Update this import as needed
 
 @pytest.fixture
 def pot_data():

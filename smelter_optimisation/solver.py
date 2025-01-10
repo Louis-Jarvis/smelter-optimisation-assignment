@@ -7,10 +7,10 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .. import config
-from ..utils import calc_crucible_value
-from .models import Crucible, Pot
-from .neighbourhood_rule import NeighbourhoodRule
+from smelter_optimisation import config
+from smelter_optimisation.utils import calc_crucible_value
+from smelter_optimisation.models import Crucible, Pot
+from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
 
 
 def _calc_delta_fx(x0, x_new, c1, c2) -> float:

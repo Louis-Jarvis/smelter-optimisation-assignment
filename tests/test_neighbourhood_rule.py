@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from smelter_optimisation.solver.neighbourhood_rule import Swap2PotsRule
+from smelter_optimisation.neighbourhood_rule import Swap2PotsRule
 
 NUM_CRUCIBLES = 2
 POTS_PER_CRUCIBLE = 3

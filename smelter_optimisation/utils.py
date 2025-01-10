@@ -2,11 +2,11 @@
 
 import pandas as pd
 
-from .config import NUM_POTS, POTS_PER_CRUCIBLE, QUALITY_TABLE, TOL
-from .solver.models import Crucible, Pot
+from smelter_optimisation.config import NUM_POTS, POTS_PER_CRUCIBLE, QUALITY_TABLE, TOL
+from smelter_optimisation.models import Crucible, Pot
 
 
-def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame=QUALITY_TABLE) -> float:
+def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame = QUALITY_TABLE) -> float:
     """Calculate the dollar value of an individual crucible.
 
     :param crucible: solution.
