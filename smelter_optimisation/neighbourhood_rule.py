@@ -8,7 +8,7 @@ from typing import Any, Generator
 
 from numpy.typing import NDArray
 
-from ..config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
+from .config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
 
 
 class NeighbourhoodRule(ABC):
