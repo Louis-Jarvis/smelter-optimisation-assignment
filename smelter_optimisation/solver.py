@@ -1,4 +1,12 @@
-"""Different heuristic solvers for the smelter optimisation solver."""
+"""
+This module contains different heuristics used to 
+solvers for the smelter optimisation problem.
+
+This includes:
+
+- **Next Ascent Solver**: 
+A greedy algorithm that chooses the first neighbour that results in an improvement in the objective function.
+"""
 
 import logging
 import warnings
@@ -28,18 +36,14 @@ class SmeltingOptimisationSolver(ABC):
 
     @abstractmethod
     def run_solver(self, initial_solution: list[Crucible]):
-        """Generate solution."""
         pass
 
-    @property
     @abstractmethod
     def solution(self):
-        """Best solution found."""
         pass
 
     @abstractmethod
     def plot_objective(self):
-        """Plot the objective function against the number of function evaluations."""
         pass
 
     @abstractmethod
@@ -48,7 +52,22 @@ class SmeltingOptimisationSolver(ABC):
 
 
 class NextAscentSolver(SmeltingOptimisationSolver):
-    """Solver utilising a Next Ascent Greedy Heuristic."""
+    """
+    Solver utilising a Next Ascent Greedy Heuristic.
+    
+    :param neighbourhood: neighborhood rule that defines neighbours
+    adjacent to the current pot.
+    :type neighbourhood: NeighbourhoodRule
+    :param verbose: verbosity, defaults to False
+    :type verbose: bool, optional
+    :param max_iter: maximum iteration count, defaults to 5000
+    :type max_iter: int, optional
+
+
+    :example:
+        
+        >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
+    """
 
     def __init__(
         self,
@@ -56,16 +75,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         verbose: bool = False,
         max_iter: int = 5000,
     ) -> None:
-        """Initialise Next Ascent Solver.
-
-        :param neighbourhood: neighborhood rule that defines neighbours
-        adjacent to the current pot.
-        :type neighbourhood: NeighbourhoodRule
-        :param verbose: verbosity, defaults to False
-        :type verbose: bool, optional
-        :param max_iter: maximum iteration count, defaults to 5000
-        :type max_iter: int, optional
-        """
         self.neighbourhood_rule = neighbourhood
         self.verbose = verbose
         self.max_iter = max_iter
@@ -77,8 +86,27 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self._current_solution = None
         self._current_value = None
 
-    def run_solver(self, initial_solution):
-        """Generate solution."""
+    #TODO pass in max iter as an argument here
+    def run_solver(self, initial_solution: list[Crucible]) -> None:
+        """
+        Determine the optimal solution based on the next ascent solver
+
+        :param initial_solution: an initial array of crucibles.
+        :type initial_solution: list[Crucible]
+
+        :example:
+
+            >>> import pathlib
+            >>> import pandas as pd
+
+            >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
+            >>> from smelter_optimisation.solver import NextAscentSolver
+            >>> from smelter_optimisation.utils import create_init_sol
+            
+            >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
+            >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
+            >>> solver.run_solver(xi)
+        """
         optimal_value = self._calculate_objective_value(initial_solution)
 
         self._current_solution = initial_solution
@@ -120,6 +148,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 logger.info("Converged")
                 return
 
+    #TODO refactor this
     def _calculate_objective_value(self, x):
         return np.sum([calc_crucible_value(crucible) for crucible in x])
 
@@ -134,7 +163,19 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
         plt.show()
 
-    @property
+    # TODO return this from run solver instead of having a separate method
     def solution(self) -> tuple[List[Pot], float]:
-        """Best solution found."""
+        """
+        Best solution found.
+
+        :returns: the current solution and objective value
+        :rtype: tuple[List[Pot], float]
+        
+        :example:
+
+            >>> x_optim, f_optim = solver.solution
+        
+        """
+
+
         return self._current_solution, self._current_value
