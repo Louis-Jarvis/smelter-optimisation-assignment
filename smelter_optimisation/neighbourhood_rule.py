@@ -20,7 +20,7 @@ class NeighbourhoodRule(ABC):
         pass
 
 
-class Swap2PotsRule(NeighbourhoodRule):
+class SwapTwoPotsRule(NeighbourhoodRule):
     """Concrete implementation for generating neighbouring solutions by swapping two pots from different crucibles.
 
     N(x) = {y(x, p1, p2, c1, c2) :  p1=0,...,50 & p2=0,...,50 & (a != b) & (c1 != c2) }

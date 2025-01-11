@@ -1,7 +1,7 @@
 import pathlib
 import pandas as pd
 
-from smelter_optimisation.neighbourhood_rule import Swap2PotsRule
+from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 from smelter_optimisation.solver import NextAscentSolver
 from smelter_optimisation.utils import create_init_sol
 
@@ -9,7 +9,7 @@ from smelter_optimisation.utils import create_init_sol
 def main() -> None:
     xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
 
-    solver = NextAscentSolver(neighbourhood=Swap2PotsRule(), verbose=True, max_iter=500)
+    solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
 
     solver.run_solver(xi)
 
