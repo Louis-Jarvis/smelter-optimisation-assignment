@@ -1,5 +1,6 @@
 """Different heuristic solvers for the smelter optimisation solver."""
 
+import logging
 import warnings
 from abc import ABC, abstractmethod
 from typing import List
@@ -11,6 +12,8 @@ from smelter_optimisation import config
 from smelter_optimisation.models import Crucible, Pot
 from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
 from smelter_optimisation.utils import calc_crucible_value
+
+logger = logging.getLogger(__name__)
 
 
 def _calc_delta_fx(x0, x_new, c1, c2) -> float:
@@ -74,7 +77,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self._current_solution = None
         self._current_value = None
 
-    # TODO progress bar
     def run_solver(self, initial_solution):
         """Generate solution."""
         optimal_value = self._calculate_objective_value(initial_solution)
@@ -85,7 +87,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self.objective_value_history.append(self._current_value)
 
         while True:
-            print("new neighbourhood")  # TODO use logger
+            logger.info("New neighbourhood")
             neighbourhood = self.neighbourhood_rule.generate_neighbours(self._current_solution)
 
             # explore neighbourhood for increase in objective value
@@ -99,7 +101,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 # check for improvement
                 if (new_objective_value - self._current_value) > config.TOL:
                     if self.verbose:
-                        print(f"Accept Swap: current best fx: {new_objective_value:.4f}")
+                        logger.info(f"Accept Swap: current best fx: {new_objective_value:.4f}")
 
                     self._current_solution = neighbour
                     self._current_value = new_objective_value
@@ -115,7 +117,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             # check convergence
             if np.abs(self._current_value - optimal_value) < config.TOL:
                 self.converged = True
-                print("Woooo ")
+                logger.info("Converged")
                 return
 
     def _calculate_objective_value(self, x):
