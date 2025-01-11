@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Any, Generator
 
 from numpy.typing import NDArray
 
-from .config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
+from smelter_optimisation.config import NUM_CRUCIBLES, POTS_PER_CRUCIBLE
+
+logger = logging.getLogger(__name__)
 
 
 class NeighbourhoodRule(ABC):
@@ -69,7 +72,7 @@ class SwapTwoPotsRule(NeighbourhoodRule):
                         for pot_2 in range(0, self.pots_per_crucible):
                             if pot_1 < pot_2:
                                 swapped_array = deepcopy(current_solution)
-                                print(f"pot {pot_1}, crucible {crucible_1} <-> pot {pot_2}, crucible {crucible_2}")
+                                logging.info(f"pot {pot_1}, crucible {crucible_1} <-> pot {pot_2}, crucible {crucible_2}") # noqa: E501
                                 temp = swapped_array[crucible_1][pot_1]
 
                                 swapped_array[crucible_1][pot_1] = swapped_array[crucible_2][pot_2]
