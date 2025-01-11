@@ -18,3 +18,12 @@ plugins:
         paths: [smelter_optimisation]  # search packages here
         options:
           docstring_style: sphinx
+          show_docstring_examples: true
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
