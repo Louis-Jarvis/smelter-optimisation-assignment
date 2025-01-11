@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from smelter_optimisation.neighbourhood_rule import Swap2PotsRule
+from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 
 NUM_CRUCIBLES = 2
 POTS_PER_CRUCIBLE = 3
@@ -9,7 +9,7 @@ POTS_PER_CRUCIBLE = 3
 @pytest.fixture
 def setup_rule():
     """Fixture to set up the Swap2PotsRule."""
-    return Swap2PotsRule(num_crucibles=NUM_CRUCIBLES, pots_per_crucible=POTS_PER_CRUCIBLE)
+    return SwapTwoPotsRule(num_crucibles=NUM_CRUCIBLES, pots_per_crucible=POTS_PER_CRUCIBLE)
 
 #TODO use hypothesis here
 def test_generate_neighbours_size(setup_rule):
