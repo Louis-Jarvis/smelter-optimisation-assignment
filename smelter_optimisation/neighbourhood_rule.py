@@ -15,42 +15,24 @@ logger = logging.getLogger(__name__)
 
 
 class NeighbourhoodRule(ABC):
-    """Interface object that contains logic to generate neighbouring solutions."""
+    """Interface to generate neighbouring solutions."""
 
     @abstractmethod
     def generate_neighbours(self, current_solution):
-        """Create neighbouring solutions according to neighbourhood rule."""
         pass
 
 
 class SwapTwoPotsRule(NeighbourhoodRule):
-    """Concrete implementation for generating neighbouring solutions by swapping two pots from different crucibles.
-
-    N(x) = {y(x, p1, p2, c1, c2) :  p1=0,...,50 & p2=0,...,50 & (a != b) & (c1 != c2) }
-    - p1 is the index of the first pot
-    - p2 is the index of the 2nd pot
-    - c1 is the index of the first crucible
-    - c2 is the index of the first
-
-    where x is the current solution
-
-    y(x, p1, p2, c1, c2) = {y1, y2, ..., y17} is a neighbour of the current solution.
-
-    Neighbourhood rule:
-
-    yi = x_p1 if i = p1 & (c1 != c2)
-       = x_p2 if i = p2 & (c1 != c2)
-       = xi otherwise
+    """
+    Generating neighbouring solutions by swapping two pots from different crucibles.
+    
+    :param num_crucibles: number of crucibles, defaults to NUM_CRUCIBLES
+    :type num_crucibles: int, optional
+    :param pots_per_crucible: number of pots in each crucible, defaults to POTS_PER_CRUCIBLE
+    :type pots_per_crucible: int, optional
     """
 
     def __init__(self, num_crucibles: int = NUM_CRUCIBLES, pots_per_crucible: int = POTS_PER_CRUCIBLE) -> None:
-        """Initialise an instance of Swap2PotsRule.
-
-        :param num_crucibles: number of crucibles, defaults to NUM_CRUCIBLES
-        :type num_crucibles: int, optional
-        :param pots_per_crucible: number of pots in each crucible, defaults to POTS_PER_CRUCIBLE
-        :type pots_per_crucible: int, optional
-        """
         self.num_crucibles = num_crucibles
         self.pots_per_crucible = pots_per_crucible
 
@@ -59,7 +41,7 @@ class SwapTwoPotsRule(NeighbourhoodRule):
 
         :param current_solution: current array.
         :type current_solution: NDArray[Any]
-        :yield: array with two pots swapped.
+        :returns: array with two pots swapped.
         :rtype: Generator[NDArray[Any]]
         """
         for crucible_1 in range(0, self.num_crucibles):
