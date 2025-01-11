@@ -1,4 +1,4 @@
 # Neighbourhood Rule
 
-::: solver.neighbourhood_rule.NeighbourhoodRule
-::: solver.neighbourhood_rule.Swap2PotsRule
+::: neighbourhood_rule.NeighbourhoodRule
+::: neighbourhood_rule.SwapTwoPotsRule
