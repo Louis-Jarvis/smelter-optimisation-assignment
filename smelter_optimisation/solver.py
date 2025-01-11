@@ -8,13 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from smelter_optimisation import config
-from smelter_optimisation.utils import calc_crucible_value
 from smelter_optimisation.models import Crucible, Pot
 from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
+from smelter_optimisation.utils import calc_crucible_value
 
 
 def _calc_delta_fx(x0, x_new, c1, c2) -> float:
-    # FIXME this is broken
     # since the solution is additive we can calculate the change in
     delta_1 = calc_crucible_value(x_new[c1]) - calc_crucible_value(x0[c1])
     delta_2 = calc_crucible_value(x_new[c2]) - calc_crucible_value(x0[c2])
