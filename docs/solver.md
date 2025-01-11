@@ -1,2 +1,2 @@
 # Solver
-::: solver.NextAscentSolver
+::: solver
