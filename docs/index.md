@@ -3,16 +3,23 @@
 A Python implementation of a smelter optimization problem that uses heuristic methods to optimise pot arrangements in crucibles for maximum efficiency.
 
 ## Features
-- Next Ascent Solver implementation for optimization
+- Next Ascent Solver implementation for optimisation
 - Customizable neighborhood rules for solution space exploration
-- Visualization of optimization progress
+- Visualization of optimisation progress
 - Configurable solver parameters
 
 ## Installation
 
+From github
 ```bash
+git clone https://github.com/gideon-m/smelter-optimisation.git
+cd smelter-optimisation
+
 pipx install poetry
 poetry install
+
+# or for development 
+poetry install -e . # to install in editable mode
 ```
 
 ## Usage
@@ -48,11 +55,6 @@ optimal_solution, optimal_value = solver.solution()
 solver.plot_objective()
 ```
 
-## Testing 
-```bash
-poetry run pytest
-```
-
 ## Requirements
 - Python 3.10+
 - Poetry
@@ -62,6 +64,3 @@ poetry run pytest
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
