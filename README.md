@@ -19,8 +19,13 @@ Documentation: https://louis-jarvis.github.io/smelter-optimisation-assignment/
 ## Installation
 
 ```bash
+git clone https://github.com/gideon-m/smelter-optimisation.git
+cd smelter-optimisation
+
 pipx install poetry
 poetry install
+# or for development 
+poetry install -e . # to install in editable mode
 ```
 
 ## Usage
