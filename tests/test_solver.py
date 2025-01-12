@@ -33,10 +33,11 @@ def test_solver_converge_on_no_improvement(initial_solution):
 
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, verbose=False)
 
-        # Run the solver
-        solver.run_solver(initial_solution)
+        # Run the solver and capture the return values
+        x_optim, f_optim = solver.run_solver(initial_solution)
 
         assert solver.converged is True, "Expected the solver to converge, but it did not."
+        assert f_optim == 700, f"Expected final objective value to be 700, but it was {f_optim}"
 
         assert solver._num_iter > 0, "Expected the solver to perform some iterations, but it did not."
 
@@ -59,10 +60,13 @@ def test_solver_max_iter_reached(initial_solution):
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, max_iter=max_iter)
 
         with pytest.warns():
-            solver.run_solver(initial_solution)
+            # Run the solver and capture the return values
+            x_optim, f_optim = solver.run_solver(initial_solution)
 
         assert mock_calculate.call_count == max_iter + 1  # extra evaluation call at the start.
         assert solver._num_iter == max_iter
+        # Optionally, check the final objective value
+        assert f_optim == 150, f"Expected final objective value to be 150, but it was {f_optim}"
 
 @pytest.mark.filterwarnings("ignore:Max iterations (10) reached.")
 def test_solver_improvement_in_objective_value(initial_solution):
@@ -76,11 +80,10 @@ def test_solver_improvement_in_objective_value(initial_solution):
 
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, max_iter=10)
 
-        solver.run_solver(initial_solution)
-
-        fi = solver._current_value
+        # Run the solver and capture the return values
+        x_optim, f_optim = solver.run_solver(initial_solution)
 
         assert mock_calculate.call_count == 11
-        assert fi == 810
+        assert f_optim == 810, f"Expected final objective value to be 810, but it was {f_optim}"
         assert solver.objective_value_history[-1] == 730
 

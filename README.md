@@ -51,11 +51,8 @@ solver = NextAscentSolver(
     max_iter=500
 )
 
-# Run optimisation
-solver.run_solver(initial_solution)
-
-# Get optimised solution
-optimal_solution, optimal_value = solver.solution()
+# Run optimisation and get optimised solution
+optimal_solution, optimal_value = solver.run_solver(initial_solution)
 
 # Plot objective function vs number of iterations
 solver.plot_objective()

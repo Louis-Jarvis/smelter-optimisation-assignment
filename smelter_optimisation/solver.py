@@ -37,10 +37,6 @@ class SmeltingOptimisationSolver(ABC):
         pass
 
     @abstractmethod
-    def solution(self):
-        pass
-
-    @abstractmethod
     def plot_objective(self):
         pass
 
@@ -80,11 +76,16 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self._current_value = None
 
     #TODO pass in max iter as an argument here
-    def run_solver(self, initial_solution: list[Crucible]) -> None:
+    def run_solver(self, initial_solution: list[Crucible]) -> tuple[list[Crucible], float]:
         """Determine the optimal solution based on the next ascent solver.
 
         Args:
             initial_solution (list[Crucible]): an initial array of crucibles.
+
+        Returns:
+            tuple[List[Pot], float]: A tuple containing:
+                - The current solution (List[Pot])
+                - The objective value (float)
 
         Examples:
             >>> import pathlib
@@ -96,7 +97,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             >>>
             >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
-            >>> solver.run_solver(xi)
+            >>> x_optim, f_optim = solver.run_solver(xi)
         """
         optimal_value = self._calculate_objective_value(initial_solution)
 
@@ -128,7 +129,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
                 if self._num_iter == self.max_iter:
                     warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
-                    return
+                    return self._current_solution, self._current_value
 
                 # best value in neighbourhood
                 optimal_value = self._current_value
@@ -137,13 +138,13 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             if np.abs(self._current_value - optimal_value) < config.TOL:
                 self.converged = True
                 logger.info("Converged")
-                return
+                return self._current_solution, self._current_value
 
     #TODO refactor this
     def _calculate_objective_value(self, x):
         return np.sum([calc_crucible_value(crucible) for crucible in x])
 
-    def plot_objective(self):
+    def plot_objective(self) -> None:
         """Plot the objective function against the number of function evaluations."""
         _, ax = plt.subplots()
 
@@ -153,17 +154,3 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         ax.set(xlabel="Function Evaluations", ylabel="Objective Function Value f(x)")
 
         plt.show()
-
-    # TODO return this from run solver instead of having a separate method
-    def solution(self) -> tuple[List[Pot], float]:
-        """Get the current solution and objective value.
-
-        Returns:
-            tuple[List[Pot], float]: A tuple containing:
-                - The current solution (List[Pot])
-                - The objective value (float)
-
-        Examples:
-            >>> x_optim, f_optim = solver.solution
-        """
-        return self._current_solution, self._current_value

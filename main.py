@@ -11,9 +11,7 @@ def main() -> None:
 
     solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
 
-    solver.run_solver(xi)
-
-    x_optim, f_optim = solver.solution
+    x_optim, f_optim = solver.run_solver(xi)
 
     solver.plot_objective()
 
