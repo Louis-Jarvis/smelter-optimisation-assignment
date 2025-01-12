@@ -9,13 +9,13 @@ from smelter_optimisation.models import Crucible, Pot
 def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame = QUALITY_TABLE) -> float:
     """Calculate the dollar value of an individual crucible.
 
-    :param crucible: solution.
-    :type crucible: Crucible
-    :param quality_df: table mapping proportion of iron and aluminium to value,
-    defaults to quality_table
-    :type quality_df: pd.DataFrame, optional
-    :return: the dollar value of the crucible.
-    :rtype: float
+    Args:
+        crucible (Crucible): solution.
+        quality_df (pd.DataFrame, optional): table mapping proportion of iron and aluminium to value.
+            Defaults to quality_table.
+
+    Returns:
+        float: the dollar value of the crucible.
     """
     value = 0
     # TODO vectorise this
@@ -31,10 +31,11 @@ def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame = QUALITY_T
 def create_init_sol(initial_solution: pd.DataFrame) -> list[Crucible]:
     """Create an initial Crucible arrangement from csv of pots.
 
-    :param initial_solution: table of pot aluminium and iron.
-    :type initial_solution: pd.DataFrame
-    :return: initial arrangement of pots.
-    :rtype: list[Crucible]
+    Args:
+        initial_solution (pd.DataFrame): table of pot aluminium and iron.
+
+    Returns:
+        list[Crucible]: initial arrangement of pots.
     """
     pot_al, pot_fe = initial_solution["PotAl"], initial_solution["PotFe"]
 
