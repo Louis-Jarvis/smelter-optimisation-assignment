@@ -23,9 +23,8 @@ class NeighbourhoodRule(ABC):
 
 
 class SwapTwoPotsRule(NeighbourhoodRule):
-    """
-    Generating neighbouring solutions by swapping two pots from different crucibles.
-    
+    """Generates neighbouring solutions by swapping two pots from different crucibles.
+
     :param num_crucibles: number of crucibles, defaults to NUM_CRUCIBLES
     :type num_crucibles: int, optional
     :param pots_per_crucible: number of pots in each crucible, defaults to POTS_PER_CRUCIBLE

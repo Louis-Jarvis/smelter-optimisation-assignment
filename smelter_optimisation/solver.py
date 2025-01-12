@@ -1,10 +1,8 @@
-"""
-This module contains different heuristics used to 
-solvers for the smelter optimisation problem.
+"""This module contains different heuristics used to solvers for the smelter optimisation problem.
 
 This includes:
 
-- **Next Ascent Solver**: 
+- **Next Ascent Solver**:
 A greedy algorithm that chooses the first neighbour that results in an improvement in the objective function.
 """
 
@@ -52,8 +50,7 @@ class SmeltingOptimisationSolver(ABC):
 
 
 class NextAscentSolver(SmeltingOptimisationSolver):
-    """
-    Solver utilising a Next Ascent Greedy Heuristic.
+    """Solver utilising a Next Ascent Greedy Heuristic.
     
     :param neighbourhood: neighborhood rule that defines neighbours
     adjacent to the current pot.
@@ -88,8 +85,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
     #TODO pass in max iter as an argument here
     def run_solver(self, initial_solution: list[Crucible]) -> None:
-        """
-        Determine the optimal solution based on the next ascent solver
+        """Determine the optimal solution based on the next ascent solver.
 
         :param initial_solution: an initial array of crucibles.
         :type initial_solution: list[Crucible]
@@ -165,17 +161,12 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
     # TODO return this from run solver instead of having a separate method
     def solution(self) -> tuple[List[Pot], float]:
-        """
-        Best solution found.
+        """Get the current solution and objective value.
 
         :returns: the current solution and objective value
         :rtype: tuple[List[Pot], float]
-        
         :example:
-
-            >>> x_optim, f_optim = solver.solution
         
+            >>> x_optim, f_optim = solver.solution
         """
-
-
         return self._current_solution, self._current_value

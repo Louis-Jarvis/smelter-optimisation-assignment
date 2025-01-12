@@ -1,5 +1,4 @@
-"""
-Logical data models for the smelting optimisiation problem.
+"""Logical data models for the smelting optimisiation problem.
 
 Crucibles are composed of 3 pots - each containing a mix of Aluminium and Iron.
 There are 51 pots altogether and these are poured into 17 crucibles.
@@ -14,8 +13,7 @@ import numpy as np
 
 @dataclass
 class Pot:
-    """
-    Container representing a a mixture of iron and aluminium ore.
+    """Container representing a a mixture of iron and aluminium ore.
     
     :param index: Identifier for the pot.
     :type index: int
@@ -43,8 +41,7 @@ class Pot:
 
 @dataclass
 class Crucible:
-    """
-    Container representing a crucible of 3 pots.
+    """Container representing a crucible of 3 pots.
 
     :param pots: A list of 3 `Pot` objects.
 
