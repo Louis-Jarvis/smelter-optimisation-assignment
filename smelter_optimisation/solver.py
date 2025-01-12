@@ -59,8 +59,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     :type verbose: bool, optional
     :param max_iter: maximum iteration count, defaults to 5000
     :type max_iter: int, optional
-
-
     :example:
         
         >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
