@@ -27,7 +27,7 @@ class SwapTwoPotsRule(NeighbourhoodRule):
 
     Args:
         num_crucibles (int, optional): number of crucibles. Defaults to NUM_CRUCIBLES.
-        pots_per_crucible (int, optional): number of pots in each crucible. 
+        pots_per_crucible (int, optional): number of pots in each crucible.
             Defaults to POTS_PER_CRUCIBLE.
     """
 
