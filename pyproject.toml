@@ -44,9 +44,12 @@ select = [
 ignore = [
     "C901",  # too complex
     "W191",  # indentation contains tabs
+    "W293", # blank line contains whitespace
     "D401",  # imperative mood
     "D104",   # dont need dosctrings in __init__.py
-    "D105"   # missing docstring in average method.
+    "D105",   # missing docstring in average method.
+    "D102",  # missing docstring in public method,
+    "D107"  # missing docstring in __init__
 ]
 
 [tool.ruff.lint.pydocstyle]
