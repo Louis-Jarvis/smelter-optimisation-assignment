@@ -52,15 +52,13 @@ class SmeltingOptimisationSolver(ABC):
 class NextAscentSolver(SmeltingOptimisationSolver):
     """Solver utilising a Next Ascent Greedy Heuristic.
     
-    :param neighbourhood: neighborhood rule that defines neighbours
-    adjacent to the current pot.
-    :type neighbourhood: NeighbourhoodRule
-    :param verbose: verbosity, defaults to False
-    :type verbose: bool, optional
-    :param max_iter: maximum iteration count, defaults to 5000
-    :type max_iter: int, optional
-    :example:
-        
+    Args:
+        neighbourhood (NeighbourhoodRule): neighborhood rule that defines neighbours
+            adjacent to the current pot.
+        verbose (bool, optional): verbosity. Defaults to False.
+        max_iter (int, optional): maximum iteration count. Defaults to 5000.
+    
+    Examples:
         >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
     """
 
@@ -85,18 +83,17 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     def run_solver(self, initial_solution: list[Crucible]) -> None:
         """Determine the optimal solution based on the next ascent solver.
 
-        :param initial_solution: an initial array of crucibles.
-        :type initial_solution: list[Crucible]
+        Args:
+            initial_solution (list[Crucible]): an initial array of crucibles.
 
-        :example:
-
+        Examples:
             >>> import pathlib
             >>> import pandas as pd
-
+            >>>
             >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
             >>> from smelter_optimisation.solver import NextAscentSolver
             >>> from smelter_optimisation.utils import create_init_sol
-            
+            >>>
             >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
             >>> solver.run_solver(xi)
@@ -161,10 +158,12 @@ class NextAscentSolver(SmeltingOptimisationSolver):
     def solution(self) -> tuple[List[Pot], float]:
         """Get the current solution and objective value.
 
-        :returns: the current solution and objective value
-        :rtype: tuple[List[Pot], float]
-        :example:
-        
+        Returns:
+            tuple[List[Pot], float]: A tuple containing:
+                - The current solution (List[Pot])
+                - The objective value (float)
+
+        Examples:
             >>> x_optim, f_optim = solver.solution
         """
         return self._current_solution, self._current_value

@@ -25,10 +25,10 @@ class NeighbourhoodRule(ABC):
 class SwapTwoPotsRule(NeighbourhoodRule):
     """Generates neighbouring solutions by swapping two pots from different crucibles.
 
-    :param num_crucibles: number of crucibles, defaults to NUM_CRUCIBLES
-    :type num_crucibles: int, optional
-    :param pots_per_crucible: number of pots in each crucible, defaults to POTS_PER_CRUCIBLE
-    :type pots_per_crucible: int, optional
+    Args:
+        num_crucibles (int, optional): number of crucibles. Defaults to NUM_CRUCIBLES.
+        pots_per_crucible (int, optional): number of pots in each crucible. 
+            Defaults to POTS_PER_CRUCIBLE.
     """
 
     def __init__(self, num_crucibles: int = NUM_CRUCIBLES, pots_per_crucible: int = POTS_PER_CRUCIBLE) -> None:
@@ -38,10 +38,11 @@ class SwapTwoPotsRule(NeighbourhoodRule):
     def generate_neighbours(self, current_solution: NDArray[Any]) -> Generator[NDArray[Any]]:
         """Generate a series of neighbours around a solution by swapping two pots.
 
-        :param current_solution: current array.
-        :type current_solution: NDArray[Any]
-        :returns: array with two pots swapped.
-        :rtype: Generator[NDArray[Any]]
+        Args:
+            current_solution (NDArray[Any]): current array.
+
+        Returns:
+            Generator[NDArray[Any]]: array with two pots swapped.
         """
         for crucible_1 in range(0, self.num_crucibles):
             for crucible_2 in range(0, self.num_crucibles):

@@ -15,15 +15,12 @@ import numpy as np
 class Pot:
     """Container representing a a mixture of iron and aluminium ore.
     
-    :param index: Identifier for the pot.
-    :type index: int
-    :param alumnium_pct: Percentage of aluminium in the ore.
-    :type alumnium_pct: float
-    :param iron_pct: Percentage of iron in the ore.
-    :type iron_pct: float
+    Args:
+        index (int): Identifier for the pot.
+        alumnium_pct (float): Percentage of aluminium in the ore.
+        iron_pct (float): Percentage of iron in the ore.
 
-    :example:
-
+    Examples:
         >>> from smelter_optimisation import Pot
         >>> pot = Pot(index=1, alumnium_pct=25.0, iron_pct=75.0)
         >>> pot.index
@@ -43,10 +40,10 @@ class Pot:
 class Crucible:
     """Container representing a crucible of 3 pots.
 
-    :param pots: A list of 3 `Pot` objects.
+    Args:
+        pots (List[Pot]): A list of 3 `Pot` objects.
 
-    :example:
-
+    Examples:
         >>> from smelter_optimisation import Pot, Crucible
         >>> pot1 = Pot(index=1, alumnium_pct=25.0, iron_pct=75.0)
         >>> pot2 = Pot(index=2, alumnium_pct=30.0, iron_pct=70.0)
@@ -59,12 +56,20 @@ class Crucible:
 
     @property
     def avg_al(self) -> float:
-        """Average Alumnium % of the crucible."""
+        """Average Alumnium % of the crucible.
+
+        Returns:
+            float: The average aluminum percentage.
+        """
         return np.mean([pot.alumnium_pct for pot in self.pots])
 
     @property
     def avg_fe(self) -> float:
-        """Average Iron % of the crucible."""
+        """Average Iron % of the crucible.
+        
+        Returns:
+            float: The average iron percentage.
+        """
         return np.mean([pot.iron_pct for pot in self.pots])
 
     def __repr__(self) -> str:
