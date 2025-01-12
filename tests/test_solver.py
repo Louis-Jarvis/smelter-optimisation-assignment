@@ -78,7 +78,7 @@ def test_solver_improvement_in_objective_value(initial_solution):
 
         solver.run_solver(initial_solution)
 
-        _, fi = solver.solution
+        fi = solver._current_value
 
         assert mock_calculate.call_count == 11
         assert fi == 810
