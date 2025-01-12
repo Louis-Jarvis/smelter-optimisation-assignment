@@ -17,12 +17,19 @@ plugins:
       python:
         paths: [smelter_optimisation]  # search packages here
         options:
-          docstring_style: sphinx
+          docstring_style: google
           show_docstring_examples: true
 
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences  
 
 extra_javascript:
   - javascripts/mathjax.js
