@@ -1,30 +1,12 @@
 # Smelter Optimisation
 
-A Python implementation of a smelter optimization problem that uses heuristic methods to optimise pot arrangements in crucibles for maximum efficiency.
+A Python implementation of a smelter optimization problem that uses heuristic methods to optimize pot arrangements in crucibles for maximum efficiency.
 
-## Features
-- Next Ascent Solver implementation for optimisation
-- Customizable neighborhood rules for solution space exploration
-- Visualization of optimisation progress
-- Configurable solver parameters
+## Overview
 
-## Installation
+The smelter optimisation problem involves arranging pots containing mixtures of aluminium and iron into crucibles to maximize their value. Each crucible contains three pots, and the value of a crucible depends on the average composition of aluminium and iron across its pots.
 
-From github
-```bash
-git clone https://github.com/gideon-m/smelter-optimisation.git
-cd smelter-optimisation
-
-pipx install poetry
-poetry install
-
-# or for development 
-poetry install -e . # to install in editable mode
-```
-
-## Usage
-
-Basic usage example:
+## Quick Start
 
 ```python
 import pathlib
@@ -41,18 +23,36 @@ initial_solution = create_init_sol(
 # Initialise solver with desired parameters
 solver = NextAscentSolver(
     neighbourhood=SwapTwoPotsRule(),
-    verbose=True,
-    max_iter=500
+    verbose=True
 )
 
 # Run optimisation
-solver.run_solver(initial_solution)
-
-# Get optimised solution
-optimal_solution, optimal_value = solver.solution()
+optimal_solution, optimal_value = solver.run_solver(initial_solution, max_iter=500)
 
 # Plot objective function vs number of iterations
 solver.plot_objective()
+```
+
+## Installation
+
+```bash
+# Install using poetry
+git clone https://github.com/your-username/smelter-optimisation.git
+cd smelter-optimisation
+poetry install
+```
+
+## Development
+
+```bash
+# Install development dependencies
+poetry install --with dev
+
+# Run tests
+poetry run pytest
+
+# Run type checking
+poetry run mypy smelter_optimisation
 ```
 
 ## Requirements

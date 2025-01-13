@@ -18,7 +18,6 @@ def test_initialization():
     mock_neighbourhood_rule = mock.MagicMock()
 
     solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule)
-    assert solver.max_iter == 5000
     assert solver.verbose is False
     assert solver.converged is False
     assert solver.objective_value_history == []
@@ -57,15 +56,14 @@ def test_solver_max_iter_reached(initial_solution):
         mock_neighbourhood_rule = mock.MagicMock()
         mock_neighbourhood_rule.generate_neighbours.side_effect = [initial_solution] * max_iter
 
-        solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, max_iter=max_iter)
+        solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule)
 
         with pytest.warns():
-            # Run the solver and capture the return values
-            x_optim, f_optim = solver.run_solver(initial_solution)
+            # Run the solver with max_iter parameter
+            x_optim, f_optim = solver.run_solver(initial_solution, max_iter=max_iter)
 
         assert mock_calculate.call_count == max_iter + 1  # extra evaluation call at the start.
         assert solver._num_iter == max_iter
-        # Optionally, check the final objective value
         assert f_optim == 150, f"Expected final objective value to be 150, but it was {f_optim}"
 
 @pytest.mark.filterwarnings("ignore:Max iterations (10) reached.")
@@ -74,14 +72,13 @@ def test_solver_improvement_in_objective_value(initial_solution):
     with mock.patch("smelter_optimisation.solver.NextAscentSolver._calculate_objective_value") as mock_calculate:
         mock_calculate.side_effect = [700, 690, 730, 650, 620, 600, 780, 810, 750, 760, 730]
 
-        # Define a mock neighbourhood rule that improves the solution
         mock_neighbourhood_rule = mock.MagicMock()
         mock_neighbourhood_rule.generate_neighbours.return_value = [initial_solution] * 10
 
-        solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, max_iter=10)
+        solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule)
 
-        # Run the solver and capture the return values
-        x_optim, f_optim = solver.run_solver(initial_solution)
+        # Run the solver with max_iter parameter
+        x_optim, f_optim = solver.run_solver(initial_solution, max_iter=10)
 
         assert mock_calculate.call_count == 11
         assert f_optim == 810, f"Expected final objective value to be 810, but it was {f_optim}"

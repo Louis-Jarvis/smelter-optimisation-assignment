@@ -51,35 +51,31 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         neighbourhood (NeighbourhoodRule): neighborhood rule that defines neighbours
             adjacent to the current pot.
         verbose (bool, optional): verbosity. Defaults to False.
-        max_iter (int, optional): maximum iteration count. Defaults to 5000.
     
     Examples:
-        >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
+        >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
+        >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
     """
 
     def __init__(
         self,
         neighbourhood: NeighbourhoodRule,
         verbose: bool = False,
-        max_iter: int = 5000,
     ) -> None:
         self.neighbourhood_rule = neighbourhood
         self.verbose = verbose
-        self.max_iter = max_iter
         self.converged = False
-
         self.objective_value_history = []
-
         self._num_iter = 0
         self._current_solution = None
         self._current_value = None
 
-    #TODO pass in max iter as an argument here
-    def run_solver(self, initial_solution: list[Crucible]) -> tuple[list[Crucible], float]:
+    def run_solver(self, initial_solution: list[Crucible], max_iter: int = 5000) -> tuple[list[Crucible], float]:
         """Determine the optimal solution based on the next ascent solver.
 
         Args:
             initial_solution (list[Crucible]): an initial array of crucibles.
+            max_iter (int, optional): maximum number of iterations. Defaults to 5000.
 
         Returns:
             tuple[List[Pot], float]: A tuple containing:
@@ -89,21 +85,21 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         Examples:
             >>> import pathlib
             >>> import pandas as pd
-            >>>
             >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
             >>> from smelter_optimisation.solver import NextAscentSolver
             >>> from smelter_optimisation.utils import create_init_sol
             >>>
             >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
-            >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
-            >>> x_optim, f_optim = solver.run_solver(xi)
+            >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
+            >>> x_optim, f_optim = solver.run_solver(xi, max_iter=500)
         """
         optimal_value = self._calculate_objective_value(initial_solution)
 
         self._current_solution = initial_solution
         self._current_value = optimal_value
 
-        self.objective_value_history.append(self._current_value)
+        # Reset history at the start of each run
+        self.objective_value_history = [self._current_value]
 
         while True:
             logger.info("New neighbourhood")
@@ -126,8 +122,8 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                     self._current_value = new_objective_value
                     break
 
-                if self._num_iter == self.max_iter:
-                    warnings.warn(f"Max iterations ({self.max_iter}) reached.", stacklevel=1)
+                if self._num_iter == max_iter:
+                    warnings.warn(f"Max iterations ({max_iter}) reached.", stacklevel=1)
                     return self._current_solution, self._current_value
 
                 # best value in neighbourhood
