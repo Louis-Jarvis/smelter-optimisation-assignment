@@ -1,4 +1,14 @@
-"""Miscellaneous utility functions."""
+"""Utility functions for smelter optimization operations.
+
+This module provides essential utility functions including:
+- Loading and handling pot and crucible data from CSV files
+- Calculating crucible values based on quality thresholds
+- Converting between different data representations
+- Displaying a pretty print of the solution
+
+The module works with Pot and Crucible objects, handling their aluminum and iron concentrations
+to support optimisation of the smelting process.
+"""
 
 from importlib import resources
 
