@@ -4,7 +4,7 @@ A Python implementation of a smelter optimization problem that uses heuristic me
 
 ## Overview
 
-The smelter optimisation problem involves arranging pots containing mixtures of aluminium and iron into crucibles to maximize their value. Each crucible contains three pots, and the value of a crucible depends on the average composition of aluminium and iron across its pots.
+The smelter optimisation problem involves arranging pots containing mixtures of aluminium and iron into crucibles to maximise their value. Each crucible contains three pots, and the value of a crucible depends on the average composition of aluminium and iron across its pots.
 
 ## Quick Start
 
