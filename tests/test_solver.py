@@ -2,7 +2,6 @@ from unittest import mock
 
 import pandas as pd
 import pytest
-import os
 
 from smelter_optimisation.solver import NextAscentSolver
 from smelter_optimisation.utils import create_init_sol
