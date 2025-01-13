@@ -1,6 +1,6 @@
 # Smelter Optimisation
 
-A Python implementation of a smelter optimization problem that uses heuristic methods to optimize pot arrangements in crucibles for maximum efficiency.
+A Python implementation of a smelter optimization problem that uses heuristic methods to optimise pot arrangements in crucibles for maximum efficiency.
 
 ## Overview
 
