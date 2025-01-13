@@ -47,12 +47,11 @@ initial_solution = create_init_sol(
 # Initialise solver with desired parameters
 solver = NextAscentSolver(
     neighbourhood=SwapTwoPotsRule(),
-    verbose=True,
-    max_iter=500
+    verbose=True
 )
 
 # Run optimisation and get optimised solution
-optimal_solution, optimal_value = solver.run_solver(initial_solution)
+optimal_solution, optimal_value = solver.run_solver(initial_solution, max_iter=500)
 
 # Plot objective function vs number of iterations
 solver.plot_objective()
