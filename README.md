@@ -33,16 +33,12 @@ poetry install -e . # to install in editable mode
 Basic usage example:
 
 ```python
-import pathlib
-import pandas as pd
 from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 from smelter_optimisation.solver import NextAscentSolver
-from smelter_optimisation.utils import create_init_sol
+from smelter_optimisation.utils import load_initial_solution
 
 # Load initial solution from CSV
-initial_solution = create_init_sol(
-    pd.read_csv(pathlib.Path("data/initial_solution.csv"))
-)
+initial_solution = load_initial_solution()
 
 # Initialise solver with desired parameters
 solver = NextAscentSolver(
@@ -53,6 +49,10 @@ solver = NextAscentSolver(
 # Run optimisation and get optimised solution
 solver.optimise(initial_solution, max_iter=500)
 optimal_solution, optimal_value = solver.get_solution()
+
+print(f"Optimal value: ${optimal_value:.2f}")
+print(f"Optimal solution:")
+print_solution(optimal_solution)
 
 # Plot objective function vs number of iterations
 solver.plot_objective()

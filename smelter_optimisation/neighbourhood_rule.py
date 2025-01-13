@@ -31,6 +31,7 @@ class SwapTwoPotsRule(NeighbourhoodRule):
             Defaults to POTS_PER_CRUCIBLE.
     """
 
+    #TODO get rid of these arguments
     def __init__(self, num_crucibles: int = NUM_CRUCIBLES, pots_per_crucible: int = POTS_PER_CRUCIBLE) -> None:
         self.num_crucibles = num_crucibles
         self.pots_per_crucible = pots_per_crucible

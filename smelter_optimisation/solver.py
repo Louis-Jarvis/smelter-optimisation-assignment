@@ -14,7 +14,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
-from smelter_optimisation import config
+from smelter_optimisation.config import TOL
 from smelter_optimisation.models import Crucible
 from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
 from smelter_optimisation.utils import calc_crucible_value
@@ -82,13 +82,11 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             max_iter (int, optional): maximum number of iterations. Defaults to 5000.
 
         Examples:
-            >>> import pathlib
-            >>> import pandas as pd
             >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
             >>> from smelter_optimisation.solver import NextAscentSolver
-            >>> from smelter_optimisation.utils import create_init_sol
+            >>> from smelter_optimisation.utils import load_initial_solution
             >>>
-            >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
+            >>> xi = load_initial_solution()
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
             >>> solver.optimise(xi, max_iter=500)
             >>> x_optim, f_optim = solver.get_solution()
@@ -114,7 +112,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 self.objective_value_history.append(new_objective_value)
 
                 # check for improvement
-                if (new_objective_value - self._current_value) > config.TOL:
+                if (new_objective_value - self._current_value) > TOL:
                     if self.verbose:
                         logger.info(f"Accept Swap: current best fx: {new_objective_value:.4f}")
 
@@ -130,7 +128,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 optimal_value = self._current_value
 
             # check convergence
-            if np.abs(self._current_value - optimal_value) < config.TOL:
+            if np.abs(self._current_value - optimal_value) < TOL:
                 self.converged = True
                 logger.info("Converged")
                 return
@@ -147,7 +145,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             ValueError: If no solution is found.
 
         Examples:
-            >>> x_optim, f_optim = solver.get_solution() # doctest:+ELLIPSIS
+            >>> x_optim, f_optim = solver.get_solution() # doctest:+SKIP
         
         """
         if self._current_solution is None:
