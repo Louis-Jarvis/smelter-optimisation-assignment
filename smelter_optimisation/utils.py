@@ -23,6 +23,13 @@ def calc_crucible_value(crucible: Crucible) -> float:
 
     Returns:
         float: the dollar value of the crucible.
+
+    Examples:
+        >>> from smelter_optimisation.models import Crucible, Pot # doctest: +SKIP
+        >>> from smelter_optimisation.utils import calc_crucible_value # doctest: +SKIP
+        >>> crucible = Crucible([Pot(0, 0.1, 0.2), Pot(1, 0.3, 0.4), Pot(2, 0.5, 0.6)]) # doctest: +SKIP
+        >>> calc_crucible_value(crucible) # doctest: +SKIP
+        100
     """
     value = 0
     # TODO vectorise this
