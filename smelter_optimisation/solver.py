@@ -142,6 +142,13 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             tuple[list[Crucible] | Any | None, Any | None]: A tuple containing:
                 - The current solution (list[Crucible])
                 - The objective value (float)
+
+        Raises:
+            ValueError: If no solution is found.
+
+        Examples:
+            >>> x_optim, f_optim = solver.get_solution() # doctest:+ELLIPSIS
+        
         """
         if self._current_solution is None:
             raise ValueError("No solution found. Please run the solver first.")
