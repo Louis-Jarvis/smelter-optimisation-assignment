@@ -35,7 +35,7 @@ def calc_crucible_value(crucible: Crucible) -> float:
     return value
 
 
-def create_init_sol() -> list[Crucible]:
+def load_initial_solution() -> list[Crucible]:
     """Create an initial Crucible arrangement from csv of pots.
 
     Returns:
@@ -57,8 +57,4 @@ def create_init_sol() -> list[Crucible]:
 
         sol.append(crucible_i)
     return sol
-
-def get_quality_table() -> pd.DataFrame:
-    """Get the quality table."""
-    return pd.read_csv(_get_data_path("quality.csv"))
 

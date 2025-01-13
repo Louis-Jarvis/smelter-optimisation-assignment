@@ -11,10 +11,10 @@ The smelter optimisation problem involves arranging pots containing mixtures of 
 ```python
 from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 from smelter_optimisation.solver import NextAscentSolver
-from smelter_optimisation.utils import create_init_sol
+from smelter_optimisation.utils import load_initial_solution
 
 # Load initial solution from CSV
-initial_solution = create_init_sol()
+initial_solution = load_initial_solution()
 
 # Initialise solver with desired parameters
 solver = NextAscentSolver(

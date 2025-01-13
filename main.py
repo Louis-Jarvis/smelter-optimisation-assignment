@@ -4,11 +4,11 @@ Demonstration of running the smelter optimisation problem.
 
 from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 from smelter_optimisation.solver import NextAscentSolver
-from smelter_optimisation.utils import create_init_sol
+from smelter_optimisation.utils import load_initial_solution
 
 
 def main() -> None:
-    xi = create_init_sol()
+    xi = load_initial_solution()
 
     solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
 
