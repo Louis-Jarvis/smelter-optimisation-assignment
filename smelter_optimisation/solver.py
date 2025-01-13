@@ -9,13 +9,12 @@ A greedy algorithm that chooses the first neighbour that results in an improveme
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from smelter_optimisation import config
-from smelter_optimisation.models import Crucible, Pot
+from smelter_optimisation.models import Crucible
 from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
 from smelter_optimisation.utils import calc_crucible_value
 
