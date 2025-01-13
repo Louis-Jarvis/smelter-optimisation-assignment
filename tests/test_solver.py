@@ -2,6 +2,7 @@ from unittest import mock
 
 import pandas as pd
 import pytest
+import os
 
 from smelter_optimisation.solver import NextAscentSolver
 from smelter_optimisation.utils import create_init_sol
@@ -9,7 +10,7 @@ from smelter_optimisation.utils import create_init_sol
 
 @pytest.fixture
 def initial_solution():
-    return create_init_sol(pd.read_csv("data/initial_solution.csv"))
+    return create_init_sol()
 
 
 def test_initialization():

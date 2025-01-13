@@ -5,6 +5,10 @@ description = "Python implementation of an old uoa optimisation assignment"
 authors = ["Louis Jarvis"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "smelter_optimisation"}]
+include = [
+    "smelter_optimisation/data/*.csv"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"

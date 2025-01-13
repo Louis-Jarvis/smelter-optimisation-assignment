@@ -27,16 +27,12 @@ poetry install -e . # to install in editable mode
 Basic usage example:
 
 ```python
-import pathlib
-import pandas as pd
 from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
 from smelter_optimisation.solver import NextAscentSolver
 from smelter_optimisation.utils import create_init_sol
 
 # Load initial solution from CSV
-initial_solution = create_init_sol(
-    pd.read_csv(pathlib.Path("data/initial_solution.csv"))
-)
+initial_solution = create_init_sol()
 
 # Initialise solver with desired parameters
 solver = NextAscentSolver(
