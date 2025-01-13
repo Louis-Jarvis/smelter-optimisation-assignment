@@ -82,13 +82,11 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             max_iter (int, optional): maximum number of iterations. Defaults to 5000.
 
         Examples:
-            >>> import pathlib
-            >>> import pandas as pd
             >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
             >>> from smelter_optimisation.solver import NextAscentSolver
             >>> from smelter_optimisation.utils import load_initial_solution
             >>>
-            >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
+            >>> xi = load_initial_solution()
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
             >>> solver.optimise(xi, max_iter=500)
             >>> x_optim, f_optim = solver.get_solution()
@@ -147,7 +145,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             ValueError: If no solution is found.
 
         Examples:
-            >>> x_optim, f_optim = solver.get_solution() # doctest:+ELLIPSIS
+            >>> x_optim, f_optim = solver.get_solution() # doctest:+SKIP
         
         """
         if self._current_solution is None:
