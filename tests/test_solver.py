@@ -24,7 +24,7 @@ def test_initialization():
 
 def test_solver_converge_on_no_improvement(initial_solution):
     """Solver should converge if the objective value doesn't change."""
-    with mock.patch("smelter_optimisation.solver.NextAscentSolver._calculate_objective_value") as mock_calculate:
+    with mock.patch("smelter_optimisation.solver._calculate_objective_value") as mock_calculate:
         mock_calculate.return_value = 700  # Mock the objective value to be always 700
 
         mock_neighbourhood_rule = mock.MagicMock()
@@ -48,7 +48,7 @@ def test_solver_converge_on_no_improvement(initial_solution):
 
 def test_solver_max_iter_reached(initial_solution):
     """Solver should stop after max iterations."""
-    with mock.patch("smelter_optimisation.solver.NextAscentSolver._calculate_objective_value") as mock_calculate:
+    with mock.patch("smelter_optimisation.solver._calculate_objective_value") as mock_calculate:
         max_iter = 5
 
         # generate 10 neighbours, none leading to an improvement
@@ -71,7 +71,7 @@ def test_solver_max_iter_reached(initial_solution):
 @pytest.mark.filterwarnings("ignore:Max iterations (10) reached.")
 def test_solver_improvement_in_objective_value(initial_solution):
     """Check solver continues to improve in objective value"""
-    with mock.patch("smelter_optimisation.solver.NextAscentSolver._calculate_objective_value") as mock_calculate:
+    with mock.patch("smelter_optimisation.solver._calculate_objective_value") as mock_calculate:
         mock_calculate.side_effect = [700, 690, 730, 650, 620, 600, 780, 810, 750, 760, 730]
 
         mock_neighbourhood_rule = mock.MagicMock()
