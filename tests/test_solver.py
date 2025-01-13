@@ -32,19 +32,15 @@ def test_solver_converge_on_no_improvement(initial_solution):
 
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule, verbose=False)
 
-        # Run the solver and capture the return values
+        # Run the solver
         solver.optimise(initial_solution)
-        _, f_optim = solver.get_solution()
 
         assert solver.converged is True, "Expected the solver to converge, but it did not."
-        assert f_optim == 700, f"Expected final objective value to be 700, but it was {f_optim}"
-
+        assert solver.optimal_value == 700, f"Expected final objective value to be 700, but it was {solver.optimal_value}"
         assert solver._num_iter > 0, "Expected the solver to perform some iterations, but it did not."
-
-        assert (
-            solver.objective_value_history[0] == 700
-        ), f"Expected initial objective value to be 700, but it was {solver.objective_value_history[0]}"
-
+        assert solver.objective_value_history[0] == 700, (
+            f"Expected initial objective value to be 700, but it was {solver.objective_value_history[0]}"
+        )
 
 def test_solver_max_iter_reached(initial_solution):
     """Solver should stop after max iterations."""
@@ -60,13 +56,11 @@ def test_solver_max_iter_reached(initial_solution):
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule)
 
         with pytest.warns():
-            # Run the solver with max_iter parameter
             solver.optimise(initial_solution, max_iter=max_iter)
-            _, f_optim = solver.get_solution()
 
         assert mock_calculate.call_count == max_iter + 1  # extra evaluation call at the start.
         assert solver._num_iter == max_iter
-        assert f_optim == 150, f"Expected final objective value to be 150, but it was {f_optim}"
+        assert solver.optimal_value == 150, f"Expected final objective value to be 150, but it was {solver.optimal_value}"
 
 @pytest.mark.filterwarnings("ignore:Max iterations (10) reached.")
 def test_solver_improvement_in_objective_value(initial_solution):
@@ -79,11 +73,9 @@ def test_solver_improvement_in_objective_value(initial_solution):
 
         solver = NextAscentSolver(neighbourhood=mock_neighbourhood_rule)
 
-        # Run the solver with max_iter parameter
         solver.optimise(initial_solution, max_iter=10)
-        x_optim, f_optim = solver.get_solution()
 
         assert mock_calculate.call_count == 11
-        assert f_optim == 810, f"Expected final objective value to be 810, but it was {f_optim}"
+        assert solver.optimal_value == 810, f"Expected final objective value to be 810, but it was {solver.optimal_value}"
         assert solver.objective_value_history[-1] == 730
 
