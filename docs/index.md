@@ -27,7 +27,8 @@ solver = NextAscentSolver(
 )
 
 # Run optimisation
-optimal_solution, optimal_value = solver.run_solver(initial_solution, max_iter=500)
+solver.optimise(initial_solution, max_iter=500)
+optimal_solution, optimal_value = solver.get_solution()
 
 # Plot objective function vs number of iterations
 solver.plot_objective()
