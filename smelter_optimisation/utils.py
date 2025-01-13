@@ -65,3 +65,17 @@ def load_initial_solution() -> list[Crucible]:
         sol.append(crucible_i)
     return sol
 
+def print_solution(solution: list[Crucible]) -> None:
+    """Print the solution to the console.
+    
+    Example:
+        >>> print_solution(load_initial_solution()) # doctest: +SKIP
+        Crucible: p=[0, 1, 2]
+        Crucible: p=[3, 4, 5]
+        Crucible: p=[6, 7, 8]
+        ...
+        Crucible: p=[45, 46, 47]
+        Crucible: p=[48, 49, 50]
+    """
+    for crucible in solution:
+        print(crucible)
