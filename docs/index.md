@@ -1,10 +1,20 @@
 # Smelter Optimisation
 
-A Python implementation of a smelter optimization problem that uses heuristic methods to optimise pot arrangements in crucibles for maximum efficiency.
+A Python implementation of a smelter optimization problem that uses heuristic methods to optimise pot arrangements in crucibles for maximum price.
 
 ## Overview
 
 The smelter optimisation problem involves arranging pots containing mixtures of aluminium and iron into crucibles to maximise their value. Each crucible contains three pots, and the value of a crucible depends on the average composition of aluminium and iron across its pots.
+
+## Installation
+
+From github:
+```bash
+git clone https://github.com/your-username/smelter-optimisation.git
+cd smelter-optimisation
+
+poetry install
+```
 
 ## Quick Start
 
@@ -28,15 +38,6 @@ optimal_solution, optimal_value = solver.get_solution()
 
 # Plot objective function vs number of iterations
 solver.plot_objective()
-```
-
-## Installation
-
-```bash
-# Install using poetry
-git clone https://github.com/your-username/smelter-optimisation.git
-cd smelter-optimisation
-poetry install
 ```
 
 ## Development
