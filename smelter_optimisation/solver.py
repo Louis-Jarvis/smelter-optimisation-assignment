@@ -14,7 +14,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
-from smelter_optimisation import config
+from smelter_optimisation.config import TOL
 from smelter_optimisation.models import Crucible
 from smelter_optimisation.neighbourhood_rule import NeighbourhoodRule
 from smelter_optimisation.utils import calc_crucible_value
@@ -114,7 +114,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 self.objective_value_history.append(new_objective_value)
 
                 # check for improvement
-                if (new_objective_value - self._current_value) > config.TOL:
+                if (new_objective_value - self._current_value) > TOL:
                     if self.verbose:
                         logger.info(f"Accept Swap: current best fx: {new_objective_value:.4f}")
 
@@ -130,7 +130,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 optimal_value = self._current_value
 
             # check convergence
-            if np.abs(self._current_value - optimal_value) < config.TOL:
+            if np.abs(self._current_value - optimal_value) < TOL:
                 self.converged = True
                 logger.info("Converged")
                 return

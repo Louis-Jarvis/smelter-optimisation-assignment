@@ -4,17 +4,22 @@ from importlib import resources
 
 import pandas as pd
 
-from smelter_optimisation.config import NUM_POTS, POTS_PER_CRUCIBLE, QUALITY_TABLE, TOL
+from smelter_optimisation.config import NUM_POTS, POTS_PER_CRUCIBLE, TOL
 from smelter_optimisation.models import Crucible, Pot
 
 
-def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame = QUALITY_TABLE) -> float:
+def _get_data_path(filename: str) -> str:
+    """Get the path to a data file in the package."""
+    with resources.path('smelter_optimisation.data', filename) as path:
+        return str(path)
+
+quality_df = pd.read_csv(_get_data_path("quality.csv"))
+
+def calc_crucible_value(crucible: Crucible) -> float:
     """Calculate the dollar value of an individual crucible.
 
     Args:
         crucible (Crucible): solution.
-        quality_df (pd.DataFrame, optional): table mapping proportion of iron and aluminium to value.
-            Defaults to quality_table.
 
     Returns:
         float: the dollar value of the crucible.
@@ -53,8 +58,7 @@ def create_init_sol() -> list[Crucible]:
         sol.append(crucible_i)
     return sol
 
+def get_quality_table() -> pd.DataFrame:
+    """Get the quality table."""
+    return pd.read_csv(_get_data_path("quality.csv"))
 
-def _get_data_path(filename: str) -> str:
-    """Get the path to a data file in the package."""
-    with resources.path('smelter_optimisation.data', filename) as path:
-        return str(path)
