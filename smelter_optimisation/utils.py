@@ -66,9 +66,14 @@ def load_initial_solution() -> list[Crucible]:
     return sol
 
 def print_solution(solution: list[Crucible]) -> None:
-    """Print the solution to the console.
-    
-    Example:
+    """Pretty print the solution to the console.
+
+    Args:
+        solution (list[Crucible]): the solution to print.
+
+    Examples:
+        >>> from smelter_optimisation.utils import print_solution
+        >>> from smelter_optimisation.utils import load_initial_solution
         >>> print_solution(load_initial_solution()) # doctest: +SKIP
         Crucible: p=[0, 1, 2]
         Crucible: p=[3, 4, 5]
@@ -76,6 +81,7 @@ def print_solution(solution: list[Crucible]) -> None:
         ...
         Crucible: p=[45, 46, 47]
         Crucible: p=[48, 49, 50]
+
     """
     for crucible in solution:
         print(crucible)
