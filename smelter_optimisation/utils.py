@@ -1,6 +1,7 @@
 """Utility functions for smelter optimization operations.
 
 This module provides essential utility functions including:
+
 - Loading and handling pot and crucible data from CSV files
 - Calculating crucible values based on quality thresholds
 - Converting between different data representations

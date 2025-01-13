@@ -5,11 +5,11 @@ theme:
 
 nav:
   - Home: index.md
-  - Code Reference:
-    - Solver: solver.md
-    - Models: models.md
-    - Neighbourhood Rule: neighbourhood.md
-    - Utils: utils.md
+  - API Reference:
+    - Solver: api_reference/solver.md
+    - Models: api_reference/models.md
+    - Neighbourhood Rule: api_reference/neighbourhood.md
+    - Utils: api_reference/utils.md
   
 plugins:
 - mkdocstrings:

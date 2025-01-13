@@ -40,9 +40,6 @@ class SmeltingOptimisationSolver(ABC):
     def plot_objective(self):
         pass
 
-    @abstractmethod
-    def get_solution(self):
-        pass
 
 def _calculate_objective_value(crucibles: list[Crucible]) -> float:
     return np.sum([calc_crucible_value(crucible) for crucible in crucibles])
@@ -89,7 +86,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             >>> xi = load_initial_solution()
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
             >>> solver.optimise(xi, max_iter=500)
-            >>> x_optim, f_optim = solver.get_solution()
         """
         optimal_value = _calculate_objective_value(initial_solution)
 
@@ -133,26 +129,41 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 logger.info("Converged")
                 return
 
-    def get_solution(self) -> tuple[list[Crucible] | Any | None, Any | None]:
-        """Get the current solution and objective value.
+    @property
+    def optimal_solution(self) -> list[Crucible] | None:
+        """The current best solution found by the solver.
         
         Returns:
-            tuple[list[Crucible] | Any | None, Any | None]: A tuple containing:
-                - The current solution (list[Crucible])
-                - The objective value (float)
-
-        Raises:
-            ValueError: If no solution is found.
-
-        Examples:
-            >>> x_optim, f_optim = solver.get_solution() # doctest:+SKIP
+            list[Crucible] | None: The optimal arrangement of crucibles, or None if no solution exists.
         
+        Raises:
+            ValueError: If no solution has been found yet.
+        
+        Examples:
+            >>> solver.optimal_solution  # doctest:+SKIP
+            [Crucible: p=[0, 1, 2], Crucible: p=[3, 4, 5], ...]
         """
         if self._current_solution is None:
             raise ValueError("No solution found. Please run the solver first.")
-        
-        return self._current_solution, self._current_value
+        return self._current_solution
 
+    @property
+    def optimal_value(self) -> float | None:
+        """The objective value of the current best solution.
+        
+        Returns:
+            float | None: The objective value of the optimal solution, or None if no solution exists.
+        
+        Raises:
+            ValueError: If no solution has been found yet.
+        
+        Examples:
+            >>> solver.optimal_value  # doctest:+SKIP
+            810.0
+        """
+        if self._current_value is None:
+            raise ValueError("No solution found. Please run the solver first.")
+        return self._current_value
 
     def plot_objective(self) -> None:
         """Plot the objective function against the number of function evaluations."""
