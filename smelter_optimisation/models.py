@@ -21,7 +21,7 @@ class Pot:
         iron_pct (float): Percentage of iron in the ore.
 
     Examples:
-        >>> from smelter_optimisation import Pot
+        >>> from smelter_optimisation.models import Pot
         >>> pot = Pot(index=1, alumnium_pct=25.0, iron_pct=75.0)
         >>> pot.index
         1
@@ -44,7 +44,7 @@ class Crucible:
         pots (List[Pot]): A list of 3 `Pot` objects.
 
     Examples:
-        >>> from smelter_optimisation import Pot, Crucible
+        >>> from smelter_optimisation.models import Pot, Crucible
         >>> pot1 = Pot(index=1, alumnium_pct=25.0, iron_pct=75.0)
         >>> pot2 = Pot(index=2, alumnium_pct=30.0, iron_pct=70.0)
         >>> pot3 = Pot(index=3, alumnium_pct=20.0, iron_pct=80.0)
