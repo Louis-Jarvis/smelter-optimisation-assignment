@@ -12,3 +12,11 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+repos:
+  - repo: local
+    hooks:
+      - id: doctest
+        name: doctest
+        entry: make doctest
+        language: system
+        pass_filenames: false
