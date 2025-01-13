@@ -9,6 +9,7 @@ A greedy algorithm that chooses the first neighbour that results in an improveme
 import logging
 import warnings
 from abc import ABC, abstractmethod
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,11 +33,15 @@ class SmeltingOptimisationSolver(ABC):
     """Smelter optimisation problem solver heuristic."""
 
     @abstractmethod
-    def run_solver(self, initial_solution: list[Crucible]):
+    def optimise(self, initial_solution: list[Crucible]):
         pass
 
     @abstractmethod
     def plot_objective(self):
+        pass
+
+    @abstractmethod
+    def get_solution(self):
         pass
 
     @abstractmethod
@@ -70,17 +75,12 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         self._current_solution = None
         self._current_value = None
 
-    def run_solver(self, initial_solution: list[Crucible], max_iter: int = 5000) -> tuple[list[Crucible], float]:
+    def optimise(self, initial_solution: list[Crucible], max_iter: int = 5000) -> None:
         """Determine the optimal solution based on the next ascent solver.
 
         Args:
             initial_solution (list[Crucible]): an initial array of crucibles.
             max_iter (int, optional): maximum number of iterations. Defaults to 5000.
-
-        Returns:
-            tuple[List[Pot], float]: A tuple containing:
-                - The current solution (List[Pot])
-                - The objective value (float)
 
         Examples:
             >>> import pathlib
@@ -91,7 +91,8 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             >>>
             >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
-            >>> x_optim, f_optim = solver.run_solver(xi, max_iter=500)
+            >>> solver.optimise(xi, max_iter=500)
+            >>> x_optim, f_optim = solver.get_solution()
         """
         optimal_value = self._calculate_objective_value(initial_solution)
 
@@ -124,7 +125,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
 
                 if self._num_iter == max_iter:
                     warnings.warn(f"Max iterations ({max_iter}) reached.", stacklevel=1)
-                    return self._current_solution, self._current_value
+                    return
 
                 # best value in neighbourhood
                 optimal_value = self._current_value
@@ -133,7 +134,20 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             if np.abs(self._current_value - optimal_value) < config.TOL:
                 self.converged = True
                 logger.info("Converged")
-                return self._current_solution, self._current_value
+                return
+
+    def get_solution(self) -> tuple[list[Crucible] | Any | None, Any | None]:
+        """Get the current solution and objective value.
+        
+        Returns:
+            tuple[list[Crucible] | Any | None, Any | None]: A tuple containing:
+                - The current solution (list[Crucible])
+                - The objective value (float)
+        """
+        if self._current_solution is None:
+            raise ValueError("No solution found. Please run the solver first.")
+        
+        return self._current_solution, self._current_value
 
     #TODO refactor this
     def _calculate_objective_value(self, x):

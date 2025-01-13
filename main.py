@@ -1,3 +1,7 @@
+"""
+Demonstration of running the smelter optimisation problem.
+"""
+
 import pathlib
 import pandas as pd
 
@@ -11,12 +15,13 @@ def main() -> None:
 
     solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True)
 
-    x_optim, f_optim = solver.run_solver(xi, max_iter=500)
+    solver.optimise(xi, max_iter=500)
+    x_optim, f_optim = solver.get_solution()
+
+    print(f"x_optim: {x_optim}")
+    print(f"f_optim: {f_optim}")
 
     solver.plot_objective()
-
-    return
-
 
 if __name__ == "__main__":
     main()
