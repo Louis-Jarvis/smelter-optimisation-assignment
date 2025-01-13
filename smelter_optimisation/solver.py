@@ -44,9 +44,8 @@ class SmeltingOptimisationSolver(ABC):
     def get_solution(self):
         pass
 
-    @abstractmethod
-    def _calculate_objective_value(self, x):
-        pass
+def _calculate_objective_value(crucibles: list[Crucible]) -> float:
+    return np.sum([calc_crucible_value(crucible) for crucible in crucibles])
 
 
 class NextAscentSolver(SmeltingOptimisationSolver):
@@ -94,7 +93,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             >>> solver.optimise(xi, max_iter=500)
             >>> x_optim, f_optim = solver.get_solution()
         """
-        optimal_value = self._calculate_objective_value(initial_solution)
+        optimal_value = _calculate_objective_value(initial_solution)
 
         self._current_solution = initial_solution
         self._current_value = optimal_value
@@ -111,7 +110,7 @@ class NextAscentSolver(SmeltingOptimisationSolver):
                 self._num_iter += 1
 
                 # evaluate neighbour
-                new_objective_value = self._calculate_objective_value(neighbour)
+                new_objective_value = _calculate_objective_value(neighbour)
                 self.objective_value_history.append(new_objective_value)
 
                 # check for improvement
@@ -149,9 +148,6 @@ class NextAscentSolver(SmeltingOptimisationSolver):
         
         return self._current_solution, self._current_value
 
-    #TODO refactor this
-    def _calculate_objective_value(self, x):
-        return np.sum([calc_crucible_value(crucible) for crucible in x])
 
     def plot_objective(self) -> None:
         """Plot the objective function against the number of function evaluations."""
