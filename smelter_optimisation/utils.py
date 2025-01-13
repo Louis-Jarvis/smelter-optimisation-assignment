@@ -1,5 +1,7 @@
 """Miscellaneous utility functions."""
 
+from importlib import resources
+
 import pandas as pd
 
 from smelter_optimisation.config import NUM_POTS, POTS_PER_CRUCIBLE, QUALITY_TABLE, TOL
@@ -28,15 +30,13 @@ def calc_crucible_value(crucible: Crucible, quality_df: pd.DataFrame = QUALITY_T
     return value
 
 
-def create_init_sol(initial_solution: pd.DataFrame) -> list[Crucible]:
+def create_init_sol() -> list[Crucible]:
     """Create an initial Crucible arrangement from csv of pots.
-
-    Args:
-        initial_solution (pd.DataFrame): table of pot aluminium and iron.
 
     Returns:
         list[Crucible]: initial arrangement of pots.
     """
+    initial_solution = pd.read_csv(_get_data_path("initial_solution.csv"))
     pot_al, pot_fe = initial_solution["PotAl"], initial_solution["PotFe"]
 
     sol = []
@@ -52,3 +52,9 @@ def create_init_sol(initial_solution: pd.DataFrame) -> list[Crucible]:
 
         sol.append(crucible_i)
     return sol
+
+
+def _get_data_path(filename: str) -> str:
+    """Get the path to a data file in the package."""
+    with resources.path('smelter_optimisation.data', filename) as path:
+        return str(path)
