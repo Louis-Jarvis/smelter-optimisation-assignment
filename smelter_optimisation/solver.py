@@ -92,9 +92,9 @@ class NextAscentSolver(SmeltingOptimisationSolver):
             >>>
             >>> from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
             >>> from smelter_optimisation.solver import NextAscentSolver
-            >>> from smelter_optimisation.utils import create_init_sol
+            >>> from smelter_optimisation.utils import load_initial_solution
             >>>
-            >>> xi = create_init_sol(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
+            >>> xi = load_initial_solution(pd.read_csv(pathlib.Path("data/initial_solution.csv")))
             >>> solver = NextAscentSolver(neighbourhood=SwapTwoPotsRule(), verbose=True, max_iter=500)
             >>> x_optim, f_optim = solver.run_solver(xi)
         """

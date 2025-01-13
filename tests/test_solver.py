@@ -4,12 +4,12 @@ import pandas as pd
 import pytest
 
 from smelter_optimisation.solver import NextAscentSolver
-from smelter_optimisation.utils import create_init_sol
+from smelter_optimisation.utils import load_initial_solution
 
 
 @pytest.fixture
 def initial_solution():
-    return create_init_sol()
+    return load_initial_solution()
 
 
 def test_initialization():
