@@ -1,11 +1,12 @@
 name: ci-cd
 on:
   push:
-    branches:
-      - master 
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
 permissions:
-  contents: write
+  contents: write # needed for gh-deploy 
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -50,6 +51,7 @@ jobs:
 
   deploy-mkdocs-to-gh-pages:
     needs: build-and-test # wait for build to finish before deploying
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' # only deploy on push to master
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
