@@ -59,10 +59,12 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+      
       - uses: actions/cache@v4
         with:
           key: mkdocs-material-${{ env.cache_id }}
@@ -72,3 +74,22 @@ jobs:
       - run: |
           pip install mkdocs-material mkdocstrings mkdocstrings-python
           mkdocs gh-deploy --force
+
+  publish-to-test-pypi:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # only deploy on push to main
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to Test PyPI
+        run: |
+          poetry build
+          poetry publish --repository test-pypi
+    
+      - uses: actions/checkout@v4
+      - name: Check published to Test PyPI
+        run: |
+          pip install smelter_optimisation --index-url https://test.pypi.org/simple/
