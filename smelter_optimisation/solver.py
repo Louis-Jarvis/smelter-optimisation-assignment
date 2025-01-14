@@ -9,7 +9,6 @@ A greedy algorithm that chooses the first neighbour that results in an improveme
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
