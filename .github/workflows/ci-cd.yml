@@ -100,7 +100,7 @@ jobs:
       - name: Publish to Test PyPI
         run: |
           poetry build
-          poetry publish --repository test-pypi
+          poetry publish --repository testpypi
     
       - uses: actions/checkout@v4
       - name: Check published to Test PyPI
