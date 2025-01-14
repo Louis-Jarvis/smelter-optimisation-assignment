@@ -1,0 +1,113 @@
+name: ci-cd
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: write # needed for gh-deploy 
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+      # https://github.com/marketplace/actions/python-poetry-action
+      
+    - name: Install poetry
+      uses: abatilo/actions-poetry@v2
+
+    - uses: actions/cache@v3
+      name: Define a cache for the virtual environment based on the dependencies lock file
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
+
+    - name: Install the project dependencies
+      run: poetry install
+
+    - name: Run pytest
+      run: poetry run pytest -v
+
+    - name: Install the code linting and formatting tool Ruff
+      run: pipx install ruff
+
+    - name: Lint code with Ruff
+      run: ruff check --output-format=github --target-version=py39
+      
+    - name: Check code formatting with Ruff
+      run: ruff format --diff --target-version=py39
+      continue-on-error: true
+
+
+  deploy-mkdocs-to-gh-pages:
+    needs: build-and-test # wait for build to finish before deploying
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' # only deploy on push to master
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+      
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+      - run: |
+          pip install mkdocs-material mkdocstrings mkdocstrings-python
+          mkdocs gh-deploy --force
+
+  publish-to-test-pypi:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write # essential for publishing to test pypi
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Install the project dependencies
+        run: poetry install
+        
+      - name: Publish to Test PyPI
+        env:
+          TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          poetry config pypi-token.test-pypi $TEST_PYPI_API_TOKEN
+          poetry build
+          poetry publish --repository test-pypi
+    
+      - uses: actions/checkout@v4
+      - name: Check published to Test PyPI
+        run: |
+          pip install smelter_optimisation --index-url https://test.pypi.org/simple/
