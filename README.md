@@ -24,13 +24,11 @@ cd smelter-optimisation
 
 pipx install poetry
 poetry install
-# or for development 
-poetry install -e . # to install in editable mode
 ```
 
 ## Usage
 
-Basic usage example:
+For example to run the next ascent solver using a swap two pots neighbourhood rule:
 
 ```python
 from smelter_optimisation.neighbourhood_rule import SwapTwoPotsRule
@@ -59,19 +57,31 @@ solver.plot_objective()
 ```
 
 ## Testing 
+Tests are run using [pytest](https://docs.pytest.org/en/latest/) and are located in the `tests` directory.
 ```bash
 poetry run pytest
+
+# or with makefile
+make test
+```
+
+## Documentation
+Documentation is built using [mkdocs](https://www.mkdocs.org/) and is hosted on GitHub Pages.
+```bash
+# this will generate the docs and serve them locally
+make docs 
 ```
 
 ## Requirements
 - Python 3.10+
-- Poetry
-- pandas
-- matplotlib
-- numpy
+- `Poetry`
+- `pandas`
+- `matplotlib`
+- `numpy`
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
