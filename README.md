@@ -1,6 +1,6 @@
 # Smelter Optimisation
 
-[![Python package](https://github.com/louis-jarvis/smelter-optimisation-assignment/actions/workflows/python-package.yml/badge.svg)](https://github.com/louis-jarvis/smelter-optimisation-assignment/actions/workflows/python-package.yml)
+[![Python package](https://github.com/louis-jarvis/smelter-optimisation-assignment/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/louis-jarvis/smelter-optimisation-assignment/actions/workflows/ci-cd.yml)
 [![Documentation Status](https://img.shields.io/badge/docs-mkdocs-blue)](https://your-username.github.io/smelter-optimisation/)
 [![Version](https://img.shields.io/badge/version-0.1.0-brightgreen)](https://github.com/louis-jarvis/smelter-optimisation-assignment)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/louis-jarvis/smelter-optimisation-assignment/blob/main/LICENSE)
