@@ -82,6 +82,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      id-token: write # essential for publishing to test pypi
     steps:
       - uses: actions/checkout@v4
       
