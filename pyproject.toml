@@ -26,6 +26,7 @@ ruff = "^0.8.2"
 pytest = "^8.3.4"
 isort = "^5.13.2"
 mypy = "^1.14.1"
+python-semantic-release = "^9.16.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -59,3 +60,8 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.semantic_release]
+# necessary for python semantic release to automatically update the version in pyproject.toml
+# see more at https://py-pkgs.org/07-releasing-versioning#step-5-tag-a-release-with-version-control
+version_variable = "pyproject.toml:version"
