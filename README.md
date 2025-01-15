@@ -4,6 +4,7 @@
 [![Documentation Status](https://img.shields.io/badge/docs-mkdocs-blue)](https://your-username.github.io/smelter-optimisation/)
 [![Version](https://img.shields.io/badge/version-0.1.0-brightgreen)](https://github.com/louis-jarvis/smelter-optimisation-assignment)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/louis-jarvis/smelter-optimisation-assignment/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/smelter-optimisation)](https://pypi.org/project/smelter-optimisation/)
 
 A Python implementation of a smelter optimization problem that uses heuristic methods to optimize pot arrangements in crucibles for maximum efficiency.
 
@@ -18,6 +19,11 @@ Documentation: https://louis-jarvis.github.io/smelter-optimisation-assignment/
 
 ## Installation
 
+```bash
+pip install smelter_optimisation
+```
+
+From github
 ```bash
 git clone https://github.com/gideon-m/smelter-optimisation.git
 cd smelter-optimisation
