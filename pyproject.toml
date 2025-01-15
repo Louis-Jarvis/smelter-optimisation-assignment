@@ -61,7 +61,12 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.semantic_release]
 # necessary for python semantic release to automatically update the version in pyproject.toml
 # see more at https://py-pkgs.org/07-releasing-versioning#step-5-tag-a-release-with-version-control
-version_variable = "pyproject.toml:version"
+[tool.semantic_release]
+version_toml = [
+    "pyproject.toml:tool.poetry.version",
+]                                                     # version location
+branch = "main"                                       # branch to make releases of
+changelog_file = "CHANGELOG.md"                       # changelog file
+build_command = "pip install poetry && poetry build"  # build dists                                           
