@@ -72,6 +72,10 @@ Documentation is built using [mkdocs](https://www.mkdocs.org/) and is hosted on 
 make docs 
 ```
 
+## Releasing
+This project uses [python-semantic-release](https://py-pkgs.org/07-releasing-versioning#step-5-tag-a-release-with-version-control) to automatically update the version in pyproject.toml and create a release on GitHub.
+This adheres to the [conventional commit style](https://www.conventionalcommits.org/en/v1.0.0/) and [semantic versioning](https://semver.org/).
+
 ## Requirements
 - Python 3.10+
 - `Poetry`
