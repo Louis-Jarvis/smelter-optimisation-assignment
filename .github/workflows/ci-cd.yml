@@ -80,9 +80,9 @@ jobs:
           pip install mkdocs-material mkdocstrings mkdocstrings-python
           mkdocs gh-deploy --force
 
-  publish-to-test-pypi:
+  deployment:
     needs: build-and-test
-    #TODO only publish on new release/tag
+    # Only run this job if new work is pushed to "main"
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
@@ -103,8 +103,19 @@ jobs:
 
       - name: Install the project dependencies
         run: poetry install
+
+      # this step will automatically update the pyproject.toml version
+      # additionally it will also automatically add some changelog entries
+      # and create a release on GitHub
+      - name: Use Python Semantic Release to prepare release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v8.3.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Publish to Test PyPI
+        # only publish to test pypi if the release was successful
+        if: steps.release.outputs.released == 'true'
         env:
           TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
@@ -118,6 +129,19 @@ jobs:
       # extra index url is needed to make sure that dependencies 
       # can be installed if they do not exist in test pypi  
         run: |
-          pip install smelter_optimisation \
+          pip install \
           --index-url https://test.pypi.org/simple/ \
           --extra-index-url https://pypi.org/simple
+          smelter_optimisation
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.release.outputs.released == 'true'
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/upload-to-gh-release@main
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
