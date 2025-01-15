@@ -1,11 +1,11 @@
 name: ci-cd
-on:
+on: 
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-permissions:
-  contents: write # needed for gh-deploy 
+    branches:
+      - main
 
 jobs:
   build-and-test:
@@ -51,7 +51,12 @@ jobs:
 
   deploy-mkdocs-to-gh-pages:
     needs: build-and-test # wait for build to finish before deploying
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' # only deploy on push to master
+    permissions:
+      contents: write # needed for gh-deploy 
+      id-token: write
+    
+    # only deploy on push to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main '
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,11 +82,11 @@ jobs:
 
   publish-to-test-pypi:
     needs: build-and-test
+    #TODO only publish on new release/tag
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
       id-token: write # essential for publishing to test pypi
     steps:
       - uses: actions/checkout@v4
@@ -89,6 +94,7 @@ jobs:
       - name: Install poetry
         uses: abatilo/actions-poetry@v2
 
+      # cacheing the virtual environment to speed up the build process
       - uses: actions/cache@v3
         name: Define a cache for the virtual environment based on the dependencies lock file
         with:
@@ -109,6 +115,8 @@ jobs:
     
       - uses: actions/checkout@v4
       - name: Check published to Test PyPI
+      # extra index url is needed to make sure that dependencies 
+      # can be installed if they do not exist in test pypi  
         run: |
           pip install smelter_optimisation \
           --index-url https://test.pypi.org/simple/ \
