@@ -2,8 +2,8 @@ repos:
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.6
     hooks:
-    -   id: ruff
-        args: [--fix]
+    - id: ruff
+      args: [--fix]
 -   repo: local
     hooks:
     -   id: pytest
@@ -12,8 +12,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-repos:
-  - repo: local
+-   repo: local
     hooks:
       - id: doctest
         name: doctest
