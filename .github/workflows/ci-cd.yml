@@ -90,6 +90,10 @@ jobs:
       id-token: write # essential for publishing to test pypi
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Number of commits to fetch. 0 indicates all history for all branches and tags.
+          fetch-depth: 0
+
       
       - name: Install poetry
         uses: abatilo/actions-poetry@v2
