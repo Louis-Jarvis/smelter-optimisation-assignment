@@ -112,6 +112,8 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v8.3.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # enable verbose output for debuggin
+          root_options: "-vv"
         
       - name: Publish to Test PyPI
         # only publish to test pypi if the release was successful
